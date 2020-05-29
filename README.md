@@ -5,7 +5,7 @@ Version: 0 (alpha)
 
 Author: numa.tortolero@gmail.com
 
-This Emacs configuration file allows you to interact with FoxDot for live coding patterns.
+This Emacs configuration file allows you to interact with <a href="http://foxdot.org>FoxDot</a> for live coding patterns.
 
 <h2>Requirements</h2>
 
