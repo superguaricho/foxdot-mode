@@ -9,7 +9,7 @@ This Emacs configuration file allows you to interact with FoxDot (http://foxdot.
 
 <h2>Requirements</h2>
 
-SuperCollider, python with FoxDot library. You will need too 'python' Emacs package; this comes with your Emacs distribution.
+SuperCollider (https://supercollider.github.io/), python with FoxDot library. You will need too 'python' Emacs (https://www.gnu.org/software/emacs/) package; this comes with your Emacs distribution.
 
 <h2>Instructions</h2>
 
