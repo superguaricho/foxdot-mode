@@ -7,6 +7,8 @@ Author: numa.tortolero@gmail.com
 
 This Emacs configuration file allows you to interact with FoxDot (http://foxdot.org) for live coding patterns.
 
+Inspiration: tidal.el (from <a href="https://tidalcycles.org/index.php/Welcome">TidalCycles</a> project), hsc3.el (form <a href="https://github.com/rd--/hsc3/tree/master/emacs">hsc3</a> project) and <a href="https://gitlab.com/umejam/foxdot-mode">foxdot-mode</a>.
+
 <h2>Requirements</h2>
 
 <a href="https://supercollider.github.io/">SuperCollider</a>, python with <a href="http://foxdot.org">FoxDot</a> library. You will need too python package for <a href="https://www.gnu.org/software/emacs/">Emacs</a>; this comes with your Emacs distribution.
