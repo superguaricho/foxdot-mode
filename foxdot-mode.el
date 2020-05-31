@@ -25,17 +25,17 @@
 ;; This Emacs configuration file allows you to interact with FoxDot for live coding
 ;; patterns.
 ;;
-;; Requirements: SuperCollider, python with FoxDot library. You will need too 'python'
+;; Requirements: SuperCollider, python with FoxDot library.  You will need too 'python'
 ;; Emacs package; this comes with your Emacs distribution.
 ;;
 ;; Instructions:
-;; (1) If you have not doen it, install FoxDot. From a shell command line do:
+;; (1) If you have not doen it, install FoxDot.  From a shell command line do:
 ;;         $ pip install FoxDot
 ;;
 ;;     Start SuperCollider and install FoxDot quark, evaluating the following line:
 ;;         Quarks.install("FoxDot")
 ;;
-;;     Recompile the SuperCollider class library by going to 
+;;     Recompile the SuperCollider class library by going to
 ;;         Menu -> Language -> Recompile Class Library
 ;;     or pressing Ctrl+Shift+L.
 ;;
@@ -48,7 +48,7 @@
 ;;
 ;; (3) Install Emacs FoxDot mode.
 ;;     Put this file, 'foxdot-mode.el', in some directory as '~/.emacs.d' or any directory in
-;;     'load-path' list. For example, you can create a directory as '~/.emacs.d/site-lisp/foxdot-mode',
+;;     'load-path' list.  For example, you can create a directory as '~/.emacs.d/site-lisp/foxdot-mode',
 ;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add a line like:
 ;;         (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
 ;;
@@ -59,15 +59,15 @@
 ;; (6) Start foxdot, typing:
 ;;     Alt+x foxdot ENTER
 ;;
-;; That is all. Now you can write and evaluate your livecoding lines, seting the cursor over the line
+;; That is all.  Now you can write and evaluate your livecoding lines, seting the cursor over the line
 ;; that you want execute and using the folowing keys:
 ;;   Ctrl+c Ctrl+c (foxdot-run-line)
-;;   Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
+;;   Ctrl+c Ctrl+g (foxdot-run-line-and-go).  This command send a line to the interpreter and
 ;;                                            advance the cursor to he next non blank line.
-;;   Ctrl+c e (foxdot-run-block). Send the paragraphe or block where is the cursor to the interpreter.
-;;   Ctrl+c Ctrl+e (foxdot-run-block). Send the paragraphe or block where is the cursor to the interpreter
+;;   Ctrl+c e (foxdot-run-block).  Send the paragraphe or block where is the cursor to the interpreter.
+;;   Ctrl+c Ctrl+e (foxdot-run-block).  Send the paragraphe or block where is the cursor to the interpreter
 ;;                                            and go to the next non blank line.
-;;   Ctrl+c Ctrl+e (foxdot-run-region). Send the selected region to the interpreter.
+;;   Ctrl+c Ctrl+e (foxdot-run-region).  Send the selected region to the interpreter.
 ;;
 ;; You can start foxdot interpreter with:
 ;;   Ctrl+c s (foxdot-start-foxdot)
@@ -81,6 +81,7 @@
 ;;
 ;; This code is in alpha state, are not very tested, by that reason is not in Melpa (May, 2020)
 ;;
+;; Inspiration: tidal.el (from TidalCycles project), hsc3.el (form hsc3 project) and foxdot-mode.
 
 ;;; Code:
 
@@ -93,7 +94,7 @@
   "Where is foxdot-cli file.")
 
 (defvar fox-dot-cli-init-string
-"import os
+  "import os
 import cmd
 from FoxDot import *
 
@@ -110,32 +111,7 @@ if __name__ == \"__main__\":
 
 (defvar foxdot-mode-map nil)
 
-(defvar foxdot-which-shell nil)
-(make-variable-buffer-local 'foxdot-which-shell)
-
 ;;
-
-(defun foxdot-execute (start end)
-  "Send the string from START to END in the bufffer."
-  (interactive "r")
-  (let ((fd-code (buffer-substring-no-properties start end))
-	(fd-code-buffer (format (buffer-name))))
-    (append-to-buffer (get-buffer foxdot-buffer-name) start end)
-    (switch-to-buffer-other-window (get-buffer foxdot-buffer-name))
-    (execute-kbd-macro "\C-m")
-    (switch-to-buffer-other-window fd-code-buffer))
-  )
-
-(defun foxdot-execute-string (start end)
-  "Send the string from START to END in the bufffer."
-  (interactive "r")
-  (let ((fd-code (buffer-substring-no-properties start end))
-        (fd-code-buffer (format (buffer-name))))
-    (append-to-buffer (get-buffer foxdot-buffer-name) start end)
-    (switch-to-buffer-other-window (get-buffer foxdot-buffer-name))
-    (execute-kbd-macro "\C-m")
-    (switch-to-buffer-other-window fd-code-buffer))
-  )
 
 (defun foxdot-goto-next-non-blank-line ()
   "Move to the nex non-blank line."
@@ -145,13 +121,14 @@ if __name__ == \"__main__\":
   (while (and (eolp) (bolp) (not (eobp))) (forward-line))
   )
 
+(declare-function python-shell-send-string "python")
 (defun foxdot-run-line ()
   "Send the current line to the interpreter."
   (interactive)
   (let* ((start (line-beginning-position))
-	 (end (line-end-position))
-	 (b (current-buffer))
-	 (s (buffer-substring start end)))
+         (end (line-end-position))
+         (b (current-buffer))
+         (s (buffer-substring start end)))
     (pulse-momentary-highlight-one-line (point))
     (sit-for 0.25)
     (python-shell-send-string s (get-process "Python")))
@@ -176,9 +153,9 @@ if __name__ == \"__main__\":
   "Send the current block to the interpreter."
   (interactive)
   (if (use-region-p)
- 	(let* ((s (buffer-substring-no-properties (region-beginning)
-						  (region-end))))
-	  (python-shell-send-string s (get-process "Python"))))
+      (let* ((s (buffer-substring-no-properties (region-beginning)
+                                                (region-end))))
+        (python-shell-send-string s (get-process "Python"))))
   (pulse-momentary-highlight-region (mark) (point))
   (deactivate-mark t)
   )
@@ -203,7 +180,7 @@ if __name__ == \"__main__\":
 (defun foxdot-set-foxdot-mode (b)
   "Set foxdot mode to B buffer."
   (when (or (string-match "\\.py\\([0-9]\\|[iw]\\)?$" (buffer-name b))
-	    (string-match "\\.foxdot$" (buffer-name b)))
+            (string-match "\\.foxdot$" (buffer-name b)))
     (with-current-buffer b
       (if (not (equal major-mode 'foxdot-mode)) (foxdot-mode))
       (turn-on-foxdot-keybindings)))
@@ -216,16 +193,16 @@ if __name__ == \"__main__\":
   )
 
 (defun foxdot-clear-foxdot ()
+  "Clear the *FoxDot window."
   (interactive)
   (with-current-buffer "*FoxDot*" (comint-clear-buffer))
   )
 
-(declare-function python-shell-send-string "python")
 (defun foxdot-start-foxdot ()
   "Start FoxDot Interpreter."
   (interactive)
   (let ((python-shell-interpreter-args "")
-	(fd-code-buffer (get-buffer (buffer-name))))
+        (fd-code-buffer (get-buffer (buffer-name))))
     (run-python)
     (python-shell-send-string fox-dot-cli-init-string)
     (python-shell-switch-to-shell)
@@ -249,7 +226,7 @@ if __name__ == \"__main__\":
   )
 
 (defun foxdot-set-python-in-all-buffers ()
-  "Walk through buffers and set python-mode in python buffers."
+  "Walk through buffers and set 'python-mode' in python buffers."
   (interactive)
   (loop for b in (buffer-list) do (foxdot-set-python-mode b))
   )
@@ -258,7 +235,7 @@ if __name__ == \"__main__\":
   "Kill csound repl."
   (interactive)
   (let ((b (get-buffer foxdot-buffer-name))
-	(c (current-buffer)))
+        (c (current-buffer)))
     (if b (with-current-buffer b (kill-buffer-and-window))
       (error "Is not there \"*FoxDot*\" buffer"))
     (foxdot-set-python-in-all-buffers)
@@ -300,6 +277,7 @@ if __name__ == \"__main__\":
   (local-set-key [?\C-c ?\C-u] 'foxdot-hush)
   (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
   )
+(add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
 
 (defun foxdot-mode-menu (map)
   "FoxDot menu from MAP."
