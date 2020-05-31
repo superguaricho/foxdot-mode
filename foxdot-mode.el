@@ -89,10 +89,6 @@
 
 (defvar foxdot-buffer-name "*FoxDot*")
 
-(defvar foxdot-cli-path
-  (expand-file-name "foxdot-cli" "~/.local/share/python/foxdot-cli")
-  "Where is foxdot-cli file.")
-
 (defvar fox-dot-cli-init-string
   "import os
 import cmd
