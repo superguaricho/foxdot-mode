@@ -33,11 +33,14 @@ We assume that you are working in Linux.
 
    SuperCollider is now listening for messages from FoxDot.
 
-<b>(3)</b> Install Emacs FoxDot mode. Put the file "foxdot-mode.el" in some directory as "\~/.emacs.d" or any directory in "load-path" list. For example, you can create a directory as "\~/.emacs.d/site-lisp/foxdot-mode", put "foxdot.mode.el" there and, in your "\~/.emacs" initialization file, add a line like:
+<b>(3)</b> Install Emacs FoxDot mode. Put the file "foxdot-mode.el" in some directory as "\~/.emacs.d" or any directory in "load-path" list. For example, you can create a directory as "\~/.emacs.d/site-lisp/foxdot-mode", put "foxdot.mode.el" there and, in your "\~/.emacs" initialization file, add the following lines:
 
     (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
+    (require 'foxdot-mode)
 
- Evaluate that line or restart Emacs.
+Where «(expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d")» evaluates to «/home/user/.emacs.d/site-lisp/foxdot-mode».
+
+Evaluate those lines or restart Emacs.
 
 <b>(4)</b> Open a file with .py or .foxdot extension.
 
