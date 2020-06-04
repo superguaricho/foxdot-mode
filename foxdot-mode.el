@@ -49,9 +49,8 @@
 ;; (3) Install Emacs FoxDot mode.
 ;;     Put this file, 'foxdot-mode.el', in some directory as '~/.emacs.d' or any directory in
 ;;     'load-path' list.  For example, you can create a directory as '~/.emacs.d/site-lisp/foxdot-mode',
-;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add the following two lines:
+;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add a line like:
 ;;         (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
-;;         (require 'foxdot-mode)
 ;;
 ;;     Evaluate that line or restart Emacs.
 ;;
@@ -107,6 +106,12 @@ if __name__ == \"__main__\":
 ")
 
 (defvar foxdot-mode-map nil)
+
+;; To avoid the "Can’t guess python-indent-offset" warning.
+(if (boundp python-indent-guess-indent-offset-verbose)
+    (setq python-indent-guess-indent-offset-verbose nil)
+  (defvar python-indent-guess-indent-offset-verbose nil)
+  )
 
 ;;
 
@@ -208,6 +213,7 @@ if __name__ == \"__main__\":
     (with-current-buffer "*FoxDot*" (comint-clear-buffer))
     (switch-to-buffer-other-window fd-code-buffer)
     (foxdot-set-foxdot-in-all-buffers))
+  (with-current-buffer "*FoxDot*" (comint-clear-buffer))
   (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
   )
 (defalias 'start-foxdot 'foxdot-start-foxdot)
@@ -257,6 +263,7 @@ if __name__ == \"__main__\":
   (define-key map [?\C-c ?\C-e] 'foxdot-run-block-and-go)
   (define-key map [?\C-c ?\C-r] 'foxdot-run-region)
   (define-key map [?\C-c ?\C-u] 'foxdot-hush)
+  (define-key map [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   (define-key map [?\C-c ?\l] 'foxdot-load-buffer)
   )
 
@@ -272,6 +279,7 @@ if __name__ == \"__main__\":
   (local-set-key [?\C-c ?\C-e] 'foxdot-run-block-and-go)
   (local-set-key [?\C-c ?\C-r] 'foxdot-run-region)
   (local-set-key [?\C-c ?\C-u] 'foxdot-hush)
+  (local-set-key [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
   )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
