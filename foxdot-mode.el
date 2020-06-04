@@ -53,7 +53,7 @@
 ;;         (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
 ;;         (require 'foxdot-mode)
 ;;
-;;     Evaluate those lines or restart Emacs.;;
+;;     Evaluate those lines or restart Emacs.
 ;;
 ;; (5) Open a file with .py or .foxdot extension.
 ;;
@@ -199,7 +199,13 @@ if __name__ == \"__main__\":
 (defun foxdot-clear-foxdot ()
   "Clear the *FoxDot window."
   (interactive)
-  (with-current-buffer "*FoxDot*" (comint-clear-buffer))
+  (when (get-buffer "*FoxDot*")
+    (with-current-buffer (get-buffer "*FoxDot*") (comint-clear-buffer)))
+  )
+
+(defun foxdot-python-buffer ()
+  "If it is running, return the *Python* buffer."
+  (get-buffer "*Python*")
   )
 
 (defun foxdot-start-foxdot ()
@@ -208,15 +214,17 @@ if __name__ == \"__main__\":
   (let ((python-shell-interpreter-args "")
         (fd-code-buffer (get-buffer (buffer-name))))
     (run-python)
-    (python-shell-send-string fox-dot-cli-init-string)
-    (python-shell-switch-to-shell)
-    (rename-buffer foxdot-buffer-name)
     (sit-for 0.5)
-    (with-current-buffer "*FoxDot*" (comint-clear-buffer))
-    (switch-to-buffer-other-window fd-code-buffer)
-    (foxdot-set-foxdot-in-all-buffers))
-  (with-current-buffer "*FoxDot*" (comint-clear-buffer))
-  (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
+    (python-shell-send-string fox-dot-cli-init-string)
+    (when (and (foxdot-python-buffer)
+	       (not (get-buffer foxdot-buffer-name)))
+      (with-current-buffer (foxdot-python-buffer)
+	(rename-buffer foxdot-buffer-name)
+	(pop-to-buffer foxdot-buffer-name)
+	(foxdot-clear-foxdot))
+      (foxdot-set-foxdot-in-all-buffers)
+      (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode)))
+    (switch-to-buffer-other-window fd-code-buffer))
   )
 (defalias 'start-foxdot 'foxdot-start-foxdot)
 (defalias 'foxdot 'foxdot-start-foxdot)
@@ -242,7 +250,7 @@ if __name__ == \"__main__\":
   (let ((b (get-buffer foxdot-buffer-name))
         (c (current-buffer)))
     (if b (with-current-buffer b (kill-buffer-and-window))
-      (error "Is not there \"*FoxDot*\" buffer"))
+      (error "There is not *FoxDot* buffer"))
     (foxdot-set-python-in-all-buffers)
     (switch-to-buffer c))
   (if (member '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode) auto-mode-alist)
