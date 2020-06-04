@@ -49,10 +49,11 @@
 ;; (3) Install Emacs FoxDot mode.
 ;;     Put this file, 'foxdot-mode.el', in some directory as '~/.emacs.d' or any directory in
 ;;     'load-path' list.  For example, you can create a directory as '~/.emacs.d/site-lisp/foxdot-mode',
-;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add a line like:
+;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add the following lines:
 ;;         (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
+;;         (require 'foxdot-mode)
 ;;
-;;     Evaluate that line or restart Emacs.
+;;     Evaluate those lines or restart Emacs.;;
 ;;
 ;; (5) Open a file with .py or .foxdot extension.
 ;;
@@ -68,6 +69,7 @@
 ;;   Ctrl+c Ctrl+e (foxdot-run-block).  Send the paragraphe or block where is the cursor to the interpreter
 ;;                                            and go to the next non blank line.
 ;;   Ctrl+c Ctrl+e (foxdot-run-region).  Send the selected region to the interpreter.
+;;   Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 ;;
 ;; You can start foxdot interpreter with:
 ;;   Ctrl+c s (foxdot-start-foxdot)
