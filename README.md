@@ -55,6 +55,7 @@ That is all. Now you can write and evaluate your livecoding lines, seting the cu
     Ctrl+c Ctrl+e (foxdot-run-block). Send the paragraphe or block where is the cursor to the interpreter
                                             and go to the next non blank line.
     Ctrl+c Ctrl+e (foxdot-run-region). Send the selected region to the interpreter.
+    Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 
 You can start foxdot interpreter with:
 
