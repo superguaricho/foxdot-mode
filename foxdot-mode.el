@@ -49,8 +49,9 @@
 ;; (3) Install Emacs FoxDot mode.
 ;;     Put this file, 'foxdot-mode.el', in some directory as '~/.emacs.d' or any directory in
 ;;     'load-path' list.  For example, you can create a directory as '~/.emacs.d/site-lisp/foxdot-mode',
-;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add a line like:
+;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add the following two lines:
 ;;         (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
+;;         (require 'foxdot-mode)
 ;;
 ;;     Evaluate that line or restart Emacs.
 ;;
