@@ -110,7 +110,7 @@ if __name__ == \"__main__\":
 (defvar foxdot-mode-map nil)
 
 ;; To avoid the "Can’t guess python-indent-offset" warning.
-(if (boundp python-indent-guess-indent-offset-verbose)
+(if (boundp 'python-indent-guess-indent-offset-verbose)
     (setq python-indent-guess-indent-offset-verbose nil)
   (defvar python-indent-guess-indent-offset-verbose nil)
   )
