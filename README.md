@@ -46,7 +46,23 @@ Evaluate those lines or restart Emacs.
 
 <b>(5)</b> Start foxdot, typing: Alt+x foxdot ENTER
 
-That is all. Now you can write and evaluate your livecoding lines, seting the cursor over the line that you want execute and using the folowing keys:
+If you want FoxDot buffer launch when you open "myfie.foxdot", add the following lines to ~/.emacs:
+
+    (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
+    (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+
+If you do this you don't need use Alt+x foxdot. The FoxDot interpreter will launch when you open a .foxdot file.
+
+That is all.
+
+I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added these lines to my ~/.emacs file:
+
+    (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" user-emacs-directory))
+    (require 'foxdot-mode)
+    (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
+    (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+
+Now you can write and evaluate your livecoding lines, seting the cursor over the line that you want execute and using the folowing keys:
 
     Ctrl+c Ctrl+c (foxdot-run-line)
     Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
@@ -59,7 +75,7 @@ That is all. Now you can write and evaluate your livecoding lines, seting the cu
 
 You can start foxdot interpreter with:
 
-    Ctrl+c s (foxdot-start-foxdot)
+    Ctrl+c i (foxdot-start-foxdot)
 
 To quit foxdot: Alt+x kill-foxdot ENTER, or:
 
@@ -69,6 +85,5 @@ To quit foxdot: Alt+x kill-foxdot ENTER, or:
 
 Is not compatible with elpy.
 
-This code is in alpha state, are not very tested, by that reason is not in Melpa (May, 2020)
-
+This code is in alpha state, are not very tested, by that reason is not in Melpa (June, 2020).
 
