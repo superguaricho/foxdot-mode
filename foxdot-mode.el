@@ -108,6 +108,7 @@ if __name__ == \"__main__\":
 ")
 
 (defvar foxdot-mode-map nil)
+(defvar foxdot-mode-hook nil "List of functions to run after `foxdot-mode' is enabled.")
 
 ;; To avoid the "Can’t guess python-indent-offset" warning.
 (if (boundp 'python-indent-guess-indent-offset-verbose)
@@ -228,6 +229,7 @@ if __name__ == \"__main__\":
   )
 (defalias 'start-foxdot 'foxdot-start-foxdot)
 (defalias 'foxdot 'foxdot-start-foxdot)
+(add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
 
 ;;
 
@@ -264,7 +266,7 @@ if __name__ == \"__main__\":
 
 (defun foxdot-mode-keybindings (map)
   "FoxDot keybindings in MAP."
-  (define-key map [?\C-c ?\s] 'foxdot-start-foxdot)
+  (define-key map [?\C-c ?\i] 'foxdot-start-foxdot)
   (define-key map [?\C-c ?\q] 'foxdot-kill-foxdot)
   (define-key map [?\C-c ?\c] 'foxdot-run-line)
   (define-key map [?\C-c ?\C-g] 'foxdot-run-line-and-go)
@@ -280,7 +282,7 @@ if __name__ == \"__main__\":
 (defun turn-on-foxdot-keybindings ()
   "Foxdot keybindings in the local map."
   (interactive)
-  (local-set-key [?\C-c ?\s] 'foxdot-start-foxdot)
+  (local-set-key [?\C-c ?\i] 'foxdot-start-foxdot)
   (local-set-key [?\C-c ?\q] 'foxdot-kill-foxdot)
   (local-set-key [?\C-c ?\C-c] 'foxdot-run-line)
   (local-set-key [?\C-c ?\C-g] 'foxdot-run-line-and-go)
