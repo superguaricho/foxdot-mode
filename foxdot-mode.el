@@ -50,18 +50,35 @@
 ;;     Put this file, 'foxdot-mode.el', in some directory as '~/.emacs.d' or any directory in
 ;;     'load-path' list.  For example, you can create a directory as '~/.emacs.d/site-lisp/foxdot-mode',
 ;;     put 'foxdot.mode.el' there and, in your '~/.emacs' initialization file, add the following lines:
+;;
 ;;         (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
 ;;         (require 'foxdot-mode)
 ;;
 ;;     Evaluate those lines or restart Emacs.
 ;;
-;; (5) Open a file with .py or .foxdot extension.
+;; (4) Open a file with .py or .foxdot extension.
 ;;
-;; (6) Start foxdot, typing:
-;;     Alt+x foxdot ENTER
+;; (5) Start foxdot, typing: Alt+x foxdot ENTER
+;;     If you want FoxDot buffer launch when you open "myfie.foxdot", add the following lines to ~/.emacs:
 ;;
-;; That is all.  Now you can write and evaluate your livecoding lines, seting the cursor over the line
-;; that you want execute and using the folowing keys:
+;;       (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
+;;       (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+;;
+;; If you do this you don't need use Alt+x foxdot. The FoxDot interpreter will launch when you open a .foxdot file.
+;;
+;; That is all.
+;;
+;; I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added these lines to my ~/.emacs file:
+;;
+;; (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" user-emacs-directory))
+;; (require 'foxdot-mode)
+;; (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
+;; (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+;;
+;; Now, when I have started SuperCollider with FoxDot quark and open a .foxdot file in Emacs, it launchs
+;; FoxDot process and I can write and evaluate my livecoding lines, seting the cursor over the line that
+;; I want execute and using the folowing keys:
+;;
 ;;   Ctrl+c Ctrl+c (foxdot-run-line)
 ;;   Ctrl+c Ctrl+g (foxdot-run-line-and-go).  This command send a line to the interpreter and
 ;;                                            advance the cursor to he next non blank line.
