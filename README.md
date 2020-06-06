@@ -62,7 +62,7 @@ I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
 
-Now you can write and evaluate your livecoding lines, seting the cursor over the line that you want execute and using the folowing keys:
+Now, when I have started SuperCollider and open a .foxdot file in Emacs, it launchs *FoxDot* process and I can write and evaluate my livecoding lines, seting the cursor over the line that you want execute and using the folowing keys:
 
     Ctrl+c Ctrl+c (foxdot-run-line)
     Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
