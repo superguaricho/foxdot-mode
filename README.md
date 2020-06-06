@@ -85,5 +85,5 @@ To quit foxdot: Alt+x kill-foxdot ENTER, or:
 
 Is not compatible with elpy.
 
-This code is in alpha state, are not very tested, by that reason is not in Melpa (June, 2020).
+This code is in alpha state, is not very tested, by that reason is not in Melpa (June, 2020).
 
