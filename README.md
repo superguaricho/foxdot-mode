@@ -46,12 +46,12 @@ Evaluate those lines or restart Emacs.
 
 <b>(5)</b> Start foxdot, typing: Alt+x foxdot ENTER
 
-If you want FoxDot buffer launch when you open "myfie.foxdot", add the following lines to ~/.emacs:
+If you want FoxDot buffer launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
 
-If you do this you don't need use Alt+x foxdot. The FoxDot interpreter will launch when you open a .foxdot file.
+If you do this, don't need use Alt+x foxdot. The FoxDot interpreter will launch when you open a .foxdot file.
 
 That is all.
 

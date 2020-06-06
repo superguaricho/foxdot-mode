@@ -59,7 +59,7 @@
 ;; (4) Open a file with .py or .foxdot extension.
 ;;
 ;; (5) Start foxdot, typing: Alt+x foxdot ENTER
-;;     If you want FoxDot buffer launch when you open "myfie.foxdot", add the following lines to ~/.emacs:
+;;     If you want FoxDot buffer launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
 ;;
 ;;       (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
 ;;       (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
@@ -89,7 +89,7 @@
 ;;   Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 ;;
 ;; You can start foxdot interpreter with:
-;;   Ctrl+c s (foxdot-start-foxdot)
+;;   Ctrl+c i (foxdot-start-foxdot)
 ;;
 ;; To quit foxdot:
 ;;     Alt+x kill-foxdot ENTER
