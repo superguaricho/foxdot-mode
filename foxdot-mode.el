@@ -199,26 +199,45 @@ if __name__ == \"__main__\":
 
 ;;
 
+(defun foxdot-set-removing-start-hooks ()
+  "Set foxdot-mode in current buffer removing sensible hooks when need it.
+This avoids launch multiple FoxDot interpreters when you start foxdot."
+  (cond ((member 'foxdot-start-foxdot foxdot-mode-hook)
+	 (remove-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+	 (foxdot-mode)
+	 (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot))
+	((member 'start-foxdot foxdot-mode-hook)
+	 (remove-hook 'foxdot-mode-hook 'start-foxdot)
+	 (foxdot-mode)
+	 (add-hook 'foxdot-mode-hook 'start-foxdot))
+	((member 'foxdot foxdot-mode-hook)
+	 (remove-hook 'foxdot-mode-hook 'foxdot)
+	 (foxdot-mode)
+	 (add-hook 'foxdot-mode-hook 'foxdot))
+	(t (foxdot-mode)))
+  )
+
+(defun foxdot-surely-set-mode (b)
+  "Set surely 'foxdot-mode' to B."
+  (with-current-buffer b (foxdot-set-removing-start-hooks))
+  )
+
 (defun foxdot-set-foxdot-mode (&optional b)
-  "Set foxdot mode to B buffer."
+  "If B buffer has .py or .foxdot extension, set 'foxdot-mode'.
+If you have not passed a buffer B, uses current buffer."
   (interactive)
-  (let ((buf (if b b (current-buffer))))
-  (when (or (string-match "\\.py\\([0-9]\\|[iw]\\)?$" (buffer-name buf))
-            (string-match "\\.foxdot$" (buffer-name buf)))
-    (with-current-buffer buf
-      (if (not (equal major-mode 'foxdot-mode))
-	  (when (member 'foxdot-start-foxdot foxdot-mode-hook)
-	    (remove-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
-	    (foxdot-mode)
-	    (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot))
-	(foxdot-mode))
-      (turn-on-foxdot-keybindings))))
+  (let* ((buf (if b b (current-buffer)))
+	 (bufname (buffer-name buf)))
+    (when (and (or (string-match "\\.py\\([0-9]\\|[iw]\\)?$" bufname)
+		   (string-match "\\.foxdot$" bufname))
+	       (not (equal major-mode 'foxdot-mode)))
+      (foxdot-surely-set-mode buf)))
   )
 
 (defun foxdot-set-foxdot-in-all-buffers ()
   "Walk through buffers and set foxdot-mode in py buffers."
   (interactive)
-  (loop for b in (buffer-list) do (foxdot-set-foxdot-mode b))
+  (cl-loop for b in (buffer-list) do (foxdot-set-foxdot-mode b))
   )
 
 (defun foxdot-clear-foxdot ()
@@ -266,7 +285,7 @@ if __name__ == \"__main__\":
 (defun foxdot-set-python-in-all-buffers ()
   "Walk through buffers and set 'python-mode' in python buffers."
   (interactive)
-  (loop for b in (buffer-list) do (foxdot-set-python-mode b))
+  (cl-loop for b in (buffer-list) do (foxdot-set-python-mode b))
   )
 
 (defun foxdot-kill-foxdot ()
