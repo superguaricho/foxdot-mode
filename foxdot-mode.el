@@ -199,13 +199,20 @@ if __name__ == \"__main__\":
 
 ;;
 
-(defun foxdot-set-foxdot-mode (b)
+(defun foxdot-set-foxdot-mode (&optional b)
   "Set foxdot mode to B buffer."
-  (when (or (string-match "\\.py\\([0-9]\\|[iw]\\)?$" (buffer-name b))
-            (string-match "\\.foxdot$" (buffer-name b)))
-    (with-current-buffer b
-      (if (not (equal major-mode 'foxdot-mode)) (foxdot-mode))
-      (turn-on-foxdot-keybindings)))
+  (interactive)
+  (let ((buf (if b b (current-buffer))))
+  (when (or (string-match "\\.py\\([0-9]\\|[iw]\\)?$" (buffer-name buf))
+            (string-match "\\.foxdot$" (buffer-name buf)))
+    (with-current-buffer buf
+      (if (not (equal major-mode 'foxdot-mode))
+	  (when (member 'foxdot-start-foxdot foxdot-mode-hook)
+	    (remove-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+	    (foxdot-mode)
+	    (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot))
+	(foxdot-mode))
+      (turn-on-foxdot-keybindings))))
   )
 
 (defun foxdot-set-foxdot-in-all-buffers ()
@@ -217,8 +224,8 @@ if __name__ == \"__main__\":
 (defun foxdot-clear-foxdot ()
   "Clear the *FoxDot window."
   (interactive)
-  (when (get-buffer "*FoxDot*")
-    (with-current-buffer (get-buffer "*FoxDot*") (comint-clear-buffer)))
+  (when (get-buffer foxdot-buffer-name)
+    (with-current-buffer (get-buffer foxdot-buffer-name) (comint-clear-buffer)))
   )
 
 (defun foxdot-python-buffer ()
@@ -229,20 +236,19 @@ if __name__ == \"__main__\":
 (defun foxdot-start-foxdot ()
   "Start FoxDot Interpreter."
   (interactive)
-  (let ((python-shell-interpreter-args "")
-        (fd-code-buffer (get-buffer (buffer-name))))
-    (run-python)
-    (sit-for 0.5)
-    (python-shell-send-string fox-dot-cli-init-string)
-    (when (and (foxdot-python-buffer)
-	       (not (get-buffer foxdot-buffer-name)))
-      (with-current-buffer (foxdot-python-buffer)
-	(rename-buffer foxdot-buffer-name)
-	(pop-to-buffer foxdot-buffer-name)
-	(foxdot-clear-foxdot))
-      (foxdot-set-foxdot-in-all-buffers)
-      (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode)))
-    (switch-to-buffer-other-window fd-code-buffer))
+  (save-selected-window
+    (let ((python-shell-interpreter-args "")
+          (fd-code-buffer (get-buffer (buffer-name))))
+      (run-python)
+      (sit-for 0.5)
+      (when (foxdot-python-buffer)
+	(with-current-buffer (foxdot-python-buffer)
+	  (python-shell-send-string fox-dot-cli-init-string)
+	  (pop-to-buffer (foxdot-python-buffer))
+	  (rename-buffer foxdot-buffer-name)
+	  (comint-clear-buffer))))
+    (foxdot-set-foxdot-in-all-buffers)
+    (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode)))
   )
 (defalias 'start-foxdot 'foxdot-start-foxdot)
 (defalias 'foxdot 'foxdot-start-foxdot)
