@@ -72,6 +72,7 @@ Now, when I have started SuperCollider with FoxDot quark and open a .foxdot file
                                             and go to the next non blank line.
     Ctrl+c Ctrl+e (foxdot-run-region). Send the selected region to the interpreter.
     Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
+    Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 
 You can start foxdot interpreter with:
 
