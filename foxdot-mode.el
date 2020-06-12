@@ -83,9 +83,11 @@
 ;;   Ctrl+c Ctrl+g (foxdot-run-line-and-go).  This command send a line to the interpreter and
 ;;                                            advance the cursor to he next non blank line.
 ;;   Ctrl+c e (foxdot-run-block).  Send the paragraphe or block where is the cursor to the interpreter.
-;;   Ctrl+c Ctrl+e (foxdot-run-block).  Send the paragraphe or block where is the cursor to the interpreter
+;;   Ctrl+c Ctrl+e (foxdot-run-block-and-go).  Send the paragraphe or block where is the cursor to the interpreter
 ;;                                            and go to the next non blank line.
-;;   Ctrl+c Ctrl+e (foxdot-run-region).  Send the selected region to the interpreter.
+;;   Ctrl+c Ctrl+r (foxdot-run-region).  Send the selected region to the interpreter.
+;;   Ctrl+c n (foxdot-run-block-by-lines).  Send a block line by line.
+;;   Ctrl+c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
 ;;   Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 ;;   Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 ;;
@@ -195,6 +197,47 @@ if __name__ == \"__main__\":
   (mark-paragraph -1)
   (foxdot-run-region)
   (deactivate-mark t)
+  (foxdot-goto-next-non-blank-line)
+  )
+
+(defun foxdot-is-char-after (char)
+  "Test if CHAR character is before the point."
+  (string= (char-to-string (char-after)) char)
+  )
+
+(defun foxdot-end-of-line-point ()
+  "Return the point of current line."
+  (save-excursion
+    (end-of-line)
+    (point))
+  )
+
+(defun foxdot-empty-line-p ()
+  "If cursor is in a empty line, return t, else nil."
+  (or (save-excursion (beginning-of-line) (re-search-forward "^[ \t]+$" (foxdot-end-of-line-point) t))
+      (save-excursion (beginning-of-line) (foxdot-is-char-after "\n")))
+  )
+
+(defun foxdot-run-block-by-lines ()
+  "Run the block where cursor is, line by line."
+  (interactive)
+  (save-excursion
+    (mark-paragraph)
+    (deactivate-mark t)
+    (forward-line)
+    (pulse-momentary-highlight-region (mark) (point))
+    (sit-for 0.25)
+    (while (and (not (foxdot-empty-line-p))
+                (not (eobp)))
+      (foxdot-run-line)
+      (forward-line)))
+  )
+
+(defun foxdot-run-block-by-lines-and-go ()
+  "Run the block where cursor is, line by line and go to next non empty line."
+  (interactive)
+  (foxdot-run-block-by-lines)
+  (forward-paragraph)
   (foxdot-goto-next-non-blank-line)
   )
 
@@ -327,6 +370,8 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [?\C-c ?\e] 'foxdot-run-block)
   (define-key map [?\C-c ?\C-e] 'foxdot-run-block-and-go)
   (define-key map [?\C-c ?\C-r] 'foxdot-run-region)
+  (define-key map [?\C-c ?\n] 'foxdot-run-block-by-lines)
+  (define-key map [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
   (define-key map [?\C-c ?\C-u] 'foxdot-hush)
   (define-key map [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   (define-key map [?\C-c ?\l] 'foxdot-load-buffer)
@@ -343,6 +388,8 @@ If you have not passed a buffer B, uses current buffer."
   (local-set-key [?\C-c ?\e] 'foxdot-run-block)
   (local-set-key [?\C-c ?\C-e] 'foxdot-run-block-and-go)
   (local-set-key [?\C-c ?\C-r] 'foxdot-run-region)
+  (local-set-key [?\C-c ?\n] 'foxdot-run-block-by-lines)
+  (local-set-key [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
   (local-set-key [?\C-c ?\C-u] 'foxdot-hush)
   (local-set-key [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
