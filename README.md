@@ -68,9 +68,11 @@ Now, when I have started SuperCollider with FoxDot quark and open a .foxdot file
     Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
                                             advance the cursor to he next non blank line.
     Ctrl+c e (foxdot-run-block). Send the paragraphe or block where is the cursor to the interpreter.
-    Ctrl+c Ctrl+e (foxdot-run-block). Send the paragraphe or block where is the cursor to the interpreter
+    Ctrl+c Ctrl+e (foxdot-run-block-and-go). Send the paragraphe or block where is the cursor to the interpreter
                                             and go to the next non blank line.
-    Ctrl+c Ctrl+e (foxdot-run-region). Send the selected region to the interpreter.
+    Ctrl+c Ctrl+r (foxdot-run-region). Send the selected region to the interpreter.
+    Ctrl+c n (foxdot-run-block-by-lines).  Send a block line by line.
+    Ctrl+c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
     Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
     Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 
