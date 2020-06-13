@@ -82,8 +82,8 @@
 ;;   Ctrl+c Ctrl+c (foxdot-run-line)
 ;;   Ctrl+c Ctrl+g (foxdot-run-line-and-go).  This command send a line to the interpreter and
 ;;                                            advance the cursor to he next non blank line.
-;;   Ctrl+c e (foxdot-run-block).  Send the paragraphe or block where is the cursor to the interpreter.
-;;   Ctrl+c Ctrl+e (foxdot-run-block-and-go).  Send the paragraphe or block where is the cursor to the interpreter
+;;   Ctrl+c e (foxdot-execute-block).  Send the paragraphe or block where is the cursor to the interpreter.
+;;   Ctrl+c Ctrl+e (foxdot-execute-block-and-go).  Send the paragraphe or block where is the cursor to the interpreter
 ;;                                            and go to the next non blank line.
 ;;   Ctrl+c Ctrl+r (foxdot-run-region).  Send the selected region to the interpreter.
 ;;   Ctrl+c n (foxdot-run-block-by-lines).  Send a block line by line.
@@ -135,6 +135,9 @@ if __name__ == \"__main__\":
     (setq python-indent-guess-indent-offset-verbose nil)
   (defvar python-indent-guess-indent-offset-verbose nil)
   )
+
+(setq python-shell-completion-native-enable nil)
+(add-to-list 'python-shell-completion-native-disabled-interpreters "python")
 
 ;;
 
@@ -237,6 +240,34 @@ if __name__ == \"__main__\":
   "Run the block where cursor is, line by line and go to next non empty line."
   (interactive)
   (foxdot-run-block-by-lines)
+  (forward-paragraph)
+  (foxdot-goto-next-non-blank-line)
+  )
+
+(defun foxdot-execute-block ()
+  "Execute the current block in the interpreter with echo."
+  (interactive)
+  (let ((current-buffer (current-buffer)))
+    (save-excursion
+      (mark-paragraph -1)
+      (save-selected-window
+	(if (use-region-p)
+	    (let* ((b (get-buffer foxdot-buffer-name)))
+	      (cond (b
+		     (append-to-buffer (get-buffer foxdot-buffer-name)
+				       (region-beginning)
+                                       (region-end))
+		     (switch-to-buffer-other-window b)
+		     (comint-send-input))
+		    (t (message "There is not *FoxDot* buffer."))))))
+      (pulse-momentary-highlight-region (mark) (point))
+      (deactivate-mark t)))
+  )
+
+(defun foxdot-execute-block-and-go ()
+  "Execute the current block in the interpreter and go to nex non empty line."
+  (interactive)
+  (foxdot-execute-block)
   (forward-paragraph)
   (foxdot-goto-next-non-blank-line)
   )
@@ -367,8 +398,8 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [?\C-c ?\c] 'foxdot-run-line)
   (define-key map [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (define-key map [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
-  (define-key map [?\C-c ?\e] 'foxdot-run-block)
-  (define-key map [?\C-c ?\C-e] 'foxdot-run-block-and-go)
+  (define-key map [?\C-c ?\e] 'foxdot-execute-block)
+  (define-key map [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (define-key map [?\C-c ?\C-r] 'foxdot-run-region)
   (define-key map [?\C-c ?\n] 'foxdot-run-block-by-lines)
   (define-key map [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
@@ -385,8 +416,8 @@ If you have not passed a buffer B, uses current buffer."
   (local-set-key [?\C-c ?\C-c] 'foxdot-run-line)
   (local-set-key [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (local-set-key [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
-  (local-set-key [?\C-c ?\e] 'foxdot-run-block)
-  (local-set-key [?\C-c ?\C-e] 'foxdot-run-block-and-go)
+  (local-set-key [?\C-c ?\e] 'foxdot-execute-block)
+  (local-set-key [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (local-set-key [?\C-c ?\C-r] 'foxdot-run-region)
   (local-set-key [?\C-c ?\n] 'foxdot-run-block-by-lines)
   (local-set-key [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
