@@ -92,7 +92,7 @@
 ;;   Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 ;;
 ;; You can start foxdot interpreter with:
-;;   Ctrl+c i (foxdot-start-foxdot)
+;;   Ctrl+c Ctrl+s (foxdot-start-foxdot)
 ;;
 ;; To quit foxdot:
 ;;     Alt+x kill-foxdot ENTER
@@ -258,7 +258,7 @@ if __name__ == \"__main__\":
 				       (region-beginning)
                                        (region-end))
 		     (switch-to-buffer-other-window b)
-		     (comint-send-input))
+		     		     (comint-send-input))
 		    (t (message "There is not *FoxDot* buffer."))))))
       (pulse-momentary-highlight-region (mark) (point))
       (deactivate-mark t)))
@@ -356,7 +356,7 @@ If you have not passed a buffer B, uses current buffer."
   )
 (defalias 'start-foxdot 'foxdot-start-foxdot)
 (defalias 'foxdot 'foxdot-start-foxdot)
-(add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+(add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0)))
 
 ;;
 
@@ -393,15 +393,15 @@ If you have not passed a buffer B, uses current buffer."
 
 (defun foxdot-mode-keybindings (map)
   "FoxDot keybindings in MAP."
-  (define-key map [?\C-c ?\i] 'foxdot-start-foxdot)
+  (define-key map (kbd "C-c C-s") 'foxdot-start-foxdot)
   (define-key map [?\C-c ?\q] 'foxdot-kill-foxdot)
-  (define-key map [?\C-c ?\c] 'foxdot-run-line)
+  (define-key map [?\C-c ?\C-c] 'foxdot-run-line)
   (define-key map [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (define-key map [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
-  (define-key map [?\C-c ?\e] 'foxdot-execute-block)
+  (define-key map (kbd "C-c e") 'foxdot-execute-block)
   (define-key map [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (define-key map [?\C-c ?\C-r] 'foxdot-run-region)
-  (define-key map [?\C-c ?\n] 'foxdot-run-block-by-lines)
+  (define-key map [?\C-c ?\C-n] 'foxdot-run-block-by-lines)
   (define-key map [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
   (define-key map [?\C-c ?\C-u] 'foxdot-hush)
   (define-key map [?\C-c ?\C-a] 'foxdot-clear-foxdot)
@@ -411,15 +411,15 @@ If you have not passed a buffer B, uses current buffer."
 (defun turn-on-foxdot-keybindings ()
   "Foxdot keybindings in the local map."
   (interactive)
-  (local-set-key [?\C-c ?\i] 'foxdot-start-foxdot)
+  (local-set-key (kbd "C-c C-s") 'foxdot-start-foxdot)
   (local-set-key [?\C-c ?\q] 'foxdot-kill-foxdot)
   (local-set-key [?\C-c ?\C-c] 'foxdot-run-line)
   (local-set-key [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (local-set-key [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
-  (local-set-key [?\C-c ?\e] 'foxdot-execute-block)
+  (local-set-key (kbd "C-c e") 'foxdot-execute-block)
   (local-set-key [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (local-set-key [?\C-c ?\C-r] 'foxdot-run-region)
-  (local-set-key [?\C-c ?\n] 'foxdot-run-block-by-lines)
+  (local-set-key [?\C-c ?\C-n] 'foxdot-run-block-by-lines)
   (local-set-key [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
   (local-set-key [?\C-c ?\C-u] 'foxdot-hush)
   (local-set-key [?\C-c ?\C-a] 'foxdot-clear-foxdot)
@@ -431,18 +431,31 @@ If you have not passed a buffer B, uses current buffer."
   "FoxDot menu from MAP."
   (define-key map [menu-bar foxdot]
     (cons "Python-FoxDot" (make-sparse-keymap "FoxDot")))
-  (define-key map [menu-bar foxdot run-region]
-    '("Run region" . foxdot-run-region))
-  (define-key map [menu-bar foxdot run-block]
-    '("Run block" . foxdot-run-block))
-  (define-key map [menu-bar foxdot run-line]
-    '("Run line" . foxdot-run-line))
-  (define-key map [menu-bar foxdot run-line-and-go]
-    '("Run line and go" . foxdot-run-line-and-go))
-  (define-key map [menu-bar foxdot start-foxdot]
-    '("Start FoxDot" . foxdot-start-foxdot))
   (define-key map [menu-bar foxdot quit-foxdot]
     '("Quit FoxDot" . foxdot-kill-foxdot))
+  (define-key map [menu-bar foxdot start-foxdot]
+    '("Start FoxDot" . foxdot-start-foxdot))
+  (define-key map [menu-bar foxdot process-separator]
+    '(menu-item "--"))
+  (define-key map [menu-bar foxdot run-region]
+    '("Run region" . foxdot-run-region))
+  (define-key map [menu-bar foxdot run-block-by-lines-and-go]
+    '("Run block by lines and go" . foxdot-run-block-by-lines-and-go))
+  (define-key map [menu-bar foxdot run-block-by-lines]
+    '("Run block by lines" . foxdot-run-block-by-lines))
+  (define-key map [menu-bar foxdot execute-block-and-go]
+    '("Execute block and go" . foxdot-execute-block-and-go))
+  (define-key map [menu-bar foxdot execute-block]
+    '("Execute block" . foxdot-execute-block))
+  (define-key map [menu-bar foxdot run-line-and-go]
+    '("Run line and go" . foxdot-run-line-and-go))
+  (define-key map [menu-bar foxdot run-line]
+    '("Run line" . foxdot-run-line))
+  )
+
+(defun set-foxdot-mode-menu ()
+  (interactive)
+  (foxdot-mode-menu foxdot-mode-map)
   )
 
 (unless foxdot-mode-map
