@@ -78,7 +78,7 @@ Now, when I have started SuperCollider with FoxDot quark and open a .foxdot file
 
 You can start foxdot interpreter with:
 
-    Ctrl+c i (foxdot-start-foxdot)
+    Ctrl+c s (foxdot-start-foxdot)
 
 To quit foxdot: Alt+x kill-foxdot ENTER, or:
 
