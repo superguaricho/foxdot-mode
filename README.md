@@ -42,20 +42,22 @@ We assume that you are working in Linux.
    You must hear a simple sound. If you don't hear it, something is wrong,
    there is a problem with SuperCollider configuration or your audio system.
 
-<b>(3)</b> Install FoxDot quark, evaluating the following line in *SCLang:Workspace*
+<b>(3)</b> Install FoxDot quark, evaluating the following line in \*SCLang:Workspace\*
 buffer:
 
     Quarks.install("FoxDot")
 
-    Recompile the SuperCollider class library:
+Recompile the SuperCollider class library:
 
-<b>(4)</b> Start FoxDot. In *SCLang:Workspace*, evaluate the following line:
+    Alt-x sclang-recompile
+
+<b>(4)</b> Start FoxDot. In \*SCLang:Workspace\*, evaluate the following line:
 
     FoxDot.start
 
-    SuperCollider is now listening for messages from FoxDot.
+SuperCollider is now listening for messages from FoxDot.
 
-<b>(5)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory as "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory as "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
+<b>(5)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 
    $ git clone https://github.com/superguaricho/foxdot-mode
 
@@ -88,7 +90,7 @@ I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
 
-Now, when I open a .foxdot file in Emacs, it launchs SuperCollider, start FoxDot, creates a *FoxDot* process and I can write and evaluate my livecoding lines, seting the cursor over the line that I want execute and using the folowing keys:
+Now, when I open a .foxdot file in Emacs, it launchs SuperCollider, start FoxDot, creates a \*FoxDot\* process and I can write and evaluate my livecoding lines, seting the cursor over the line that I want execute and using the folowing keys:
 
     Ctrl+c Ctrl+c (foxdot-run-line)
     Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
@@ -114,14 +116,14 @@ You can work on SuperCollider at same time. If FoxDot is running, you can use:
 
     Ctrl+c 3 ()
 
-This set a window layout where you can see the *SCLang:Workspace* and the
-*SCLang:PostBuffer* buffers. You can create your own synths and sounds in sclang
-language. If you want to see again your original foxdot and *FoxDot* buffers,
+This set a window layout where you can see the \*SCLang:Workspace\* and the
+\*SCLang:PostBuffer\* buffers. You can create your own synths and sounds in sclang
+language. If you want to see again your original foxdot and \*FoxDot\* buffers,
 type:
 
     Ctrl+c f ()
 
-I you want to see the foxdot commands echo in *FoxDot* and *SCLang:PostBuffer*
+I you want to see the foxdot commands echo in \*FoxDot\* and \*SCLang:PostBuffer\*
 buffers, type:
 
     Ctrl+c w ()
