@@ -59,6 +59,8 @@
 ;; Quarks.install("FoxDot")
 ;; 
 ;; Recompile the SuperCollider class library:
+;;
+;; Alt+x sclang-recompile
 ;; 
 ;; (4) Start FoxDot. In *SCLang:Workspace*, evaluate the following line:
 ;; 
@@ -67,8 +69,8 @@
 ;; SuperCollider is now listening for messages from FoxDot.
 ;; 
 ;; (5) Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some
-;; directory as "\~/.emacs.d" or any directory in "load-path" list. For example,
-;; from the command line, you can create a directory as "\~/.emacs.d/site-lisp/"
+;; directory like "\~/.emacs.d" or any directory in "load-path" list. For example,
+;; from the command line, you can create a directory like "\~/.emacs.d/site-lisp/"
 ;; (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp),
 ;; and clone the repository:
 ;; 
