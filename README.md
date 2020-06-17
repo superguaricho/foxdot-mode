@@ -59,7 +59,7 @@ SuperCollider is now listening for messages from FoxDot.
 
 <b>(5)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 
-   $ git clone https://github.com/superguaricho/foxdot-mode
+    $ git clone https://github.com/superguaricho/foxdot-mode
 
 In your "\~/.emacs" initialization file, add the following lines:
 
