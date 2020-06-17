@@ -114,19 +114,19 @@ To quit foxdot: Alt+x kill-foxdot ENTER, or:
 
 You can work on SuperCollider at same time. If FoxDot is running, you can use:
 
-    Ctrl+c 3 ()
+    Ctrl+c 3 (foxdot-set-sc3-layout)
 
 This set a window layout where you can see the \*SCLang:Workspace\* and the
 \*SCLang:PostBuffer\* buffers. You can create your own synths and sounds in sclang
 language. If you want to see again your original foxdot and \*FoxDot\* buffers,
 type:
 
-    Ctrl+c f ()
+    Ctrl+c f (foxdot-set-foxdot-layout)
 
 I you want to see the foxdot commands echo in \*FoxDot\* and \*SCLang:PostBuffer\*
 buffers, type:
 
-    Ctrl+c w ()
+    Ctrl+c w (foxdot-sc3-foxdot-layout)
 
 <h2>Problems</h2>
 
