@@ -107,9 +107,9 @@ Now, when I open a .foxdot file in Emacs, it launchs SuperCollider, start FoxDot
     Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
     Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 
-You can start foxdot interpreter with:
-
-    Ctrl+c s (foxdot-start-foxdot)
+You can start SuperCollider and foxdot interpreter with:
+ 
+    Ctrl+c Ctrl+s (foxdot-super-foxdot)
 
 To quit foxdot: Alt+x kill-foxdot ENTER, or:
 
