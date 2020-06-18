@@ -113,11 +113,14 @@
 ;; creates a *FoxDot* process and I can write and evaluate my livecoding lines,
 ;; seting the cursor over the line that I want execute and using the folowing keys:
 ;; 
-;; Ctrl+c Ctrl+c (foxdot-run-line)
-;; Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
+;; Ctrl+c Ctrl+c (foxdot-run-line)). Send a line to the interpreter.
+;; Ctrl+c Ctrl+g (foxdot-run-line-and-go). Send a line to the interpreter and
 ;; advance the cursor to he next non blank line.
-;; Ctrl+c e (foxdot-execute-block). Send the paragraphe or block where is the cursor to the interpreter.
-;; Ctrl+c Ctrl+e (foxdot-execute-block-and-go). Send the paragraphe or block where is the cursor to the interpreter
+;; Ctrl+c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
+;; Ctrl+c Ctrl+b (foxdot-run-block-and-go). Send the block where is the cursor to the interpreter and
+;; advance the cursor to he next non blank line.
+;; Ctrl+c e (foxdot-execute-block). Send the paragraphe or block where is the cursor with echo to the interpreter.
+;; Ctrl+c Ctrl+e (foxdot-execute-block-and-go). Send the paragraphe or block where is the cursor with echo to the interpreter
 ;; and go to the next non blank line.
 ;; Ctrl+c Ctrl+r (foxdot-run-region). Send the selected region to the interpreter.
 ;; Ctrl+c n (foxdot-run-block-by-lines).  Send a block line by line.
@@ -340,7 +343,7 @@ sys.ps1 = \"FoxDot>>> \"
   )
 
 (defun foxdot-execute-block-and-go ()
-  "Execute the current block in the interpreter and go to nex non empty line."
+  "Execute the current block in the interpreter with echo and go to next non empty line."
   (interactive)
   (foxdot-execute-block)
   (forward-paragraph)
