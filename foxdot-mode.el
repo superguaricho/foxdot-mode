@@ -167,18 +167,9 @@
 
 (defvar fox-dot-cli-init-string
   "import os
-import cmd
+import sys
 from FoxDot import *
-
-class FoxDotConsole(cmd.Cmd):
-    prompt = \"FoxDot> \"
-    intro = \"LiveCoding with Python and SuperCollider\"
-
-    def default(self, line):
-        execute(line)
-
-if __name__ == \"__main__\":
-    FoxDotConsole().cmdloop()
+sys.ps1 = \"FoxDot>>> \"
 ")
 
 (defvar foxdot-mode-map nil)
@@ -194,6 +185,25 @@ if __name__ == \"__main__\":
 (add-to-list 'python-shell-completion-native-disabled-interpreters "python")
 
 ;;
+
+(defun foxdot-execute-string (string)
+  "Execute STRING in *FoxDot* buffer."
+  (let ((current-buffer (current-buffer)))
+    (let* ((b (get-buffer foxdot-buffer-name)))
+      (cond (b
+	     (switch-to-buffer-other-window b)
+	     (insert string)
+	     (comint-send-input))
+	    (t (message "There is not *FoxDot* buffer.")))))
+  )
+
+(defun foxdot-shell-newline ()
+  "Send new line to *FoxDot* buffer."
+  (interactive)
+  (when (get-buffer foxdot-buffer-name)
+    (with-current-buffer (get-buffer foxdot-buffer-name)
+      (comint-send-input)))
+  )
 
 (defun foxdot-goto-next-non-blank-line ()
   "Move to the nex non-blank line."
@@ -228,8 +238,19 @@ if __name__ == \"__main__\":
 (defun foxdot-hush ()
   "Hush foxdot."
   (interactive)
-  (python-shell-send-string "Clock.clear()" (get-process "Python"))
+  (python-shell-send-string "Clock.clear();\n" (get-process "Python"))
   )
+
+;;;
+
+(defun foxdot-send-region ()
+  "Send the region delimited by START and END to inferior Python process."
+  (interactive)
+  (if (use-region-p)
+      (python-shell-send-region (region-beginning)
+				(region-end) nil)
+    (message "No region selected"))
+    )
 
 (defun foxdot-run-region ()
   "Send the current block to the interpreter."
@@ -245,7 +266,7 @@ if __name__ == \"__main__\":
 (defun foxdot-run-block ()
   "Send the current block to the interpreter."
   (interactive)
-  (save-excursion (mark-paragraph -1) (foxdot-run-region))
+  (save-excursion (mark-paragraph -1) (foxdot-run-region) (deactivate-mark t))
   )
 
 (defun foxdot-run-block-and-go ()
@@ -312,7 +333,7 @@ if __name__ == \"__main__\":
 				       (region-beginning)
                                        (region-end))
 		     (switch-to-buffer-other-window b)
-		     		     (comint-send-input))
+		     (comint-send-input))
 		    (t (message "There is not *FoxDot* buffer."))))))
       (pulse-momentary-highlight-region (mark) (point))
       (deactivate-mark t)))
@@ -373,7 +394,10 @@ If you have not passed a buffer B, uses current buffer."
   "Clear the *FoxDot window."
   (interactive)
   (when (get-buffer foxdot-buffer-name)
-    (with-current-buffer (get-buffer foxdot-buffer-name) (comint-clear-buffer)))
+    (with-current-buffer (get-buffer foxdot-buffer-name)
+      (comint-clear-buffer)
+      (comint-send-input)
+      (comint-clear-buffer)))
   )
 
 (defun foxdot-python-buffer ()
@@ -440,7 +464,6 @@ If you have not passed a buffer B, uses current buffer."
   (cl-loop for b in (buffer-list) do (foxdot-set-python-mode b))
   )
 
-;;;###autoload
 (defun foxdot-kill-foxdot ()
   "Kill csound repl."
   (interactive)
@@ -472,10 +495,12 @@ If you have not passed a buffer B, uses current buffer."
 (defun foxdot-mode-keybindings (map)
   "FoxDot keybindings in MAP."
   (define-key map (kbd "C-c C-s") 'foxdot-start-foxdot)
-  (define-key map [?\C-c ?\q] 'foxdot-kill-foxdot)
+  (define-key map [?\C-c ?\q] 'foxdot-kill-sc-foxdot)
   (define-key map [?\C-c ?\C-c] 'foxdot-run-line)
   (define-key map [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (define-key map [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
+  (define-key map (kbd "C-c b") 'foxdot-run-block)
+  (define-key map [?\C-c ?\C-b] 'foxdot-run-block-and-go)
   (define-key map (kbd "C-c e") 'foxdot-execute-block)
   (define-key map [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (define-key map [?\C-c ?\C-r] 'foxdot-run-region)
@@ -498,10 +523,12 @@ If you have not passed a buffer B, uses current buffer."
   "Foxdot keybindings in the local map."
   (interactive)
   (local-set-key (kbd "C-c C-s") 'foxdot-start-foxdot)
-  (local-set-key [?\C-c ?\q] 'foxdot-kill-foxdot)
+  (local-set-key [?\C-c ?\q] 'foxdot-kill-sc-foxdot)
   (local-set-key [?\C-c ?\C-c] 'foxdot-run-line)
   (local-set-key [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (local-set-key [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
+  (local-set-key (kbd "C-c b") 'foxdot-run-block)
+  (local-set-key [?\C-c ?\C-b] 'foxdot-run-block-and-go)
   (local-set-key (kbd "C-c e") 'foxdot-execute-block)
   (local-set-key [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (local-set-key [?\C-c ?\C-r] 'foxdot-run-region)
@@ -518,7 +545,7 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [menu-bar foxdot]
     (cons "Python-FoxDot" (make-sparse-keymap "FoxDot")))
   (define-key map [menu-bar foxdot quit-foxdot]
-    '("Quit FoxDot" . foxdot-kill-foxdot))
+    '("Quit FoxDot" . foxdot-kill-sc-foxdot))
   (define-key map [menu-bar foxdot start-foxdot]
     '("Start FoxDot" . foxdot-start-foxdot))
   (define-key map [menu-bar foxdot process-separator]
@@ -533,6 +560,10 @@ If you have not passed a buffer B, uses current buffer."
     '("Execute block and go" . foxdot-execute-block-and-go))
   (define-key map [menu-bar foxdot execute-block]
     '("Execute block" . foxdot-execute-block))
+  (define-key map [menu-bar foxdot run-block-and-go]
+    '("Run block and go" . foxdot-run-block-and-go))
+  (define-key map [menu-bar foxdot run-block]
+    '("Run block" . foxdot-run-block))
   (define-key map [menu-bar foxdot run-line-and-go]
     '("Run line and go" . foxdot-run-line-and-go))
   (define-key map [menu-bar foxdot run-line]
