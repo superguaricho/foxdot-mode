@@ -128,9 +128,9 @@
 ;; Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 ;; Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 ;; 
-;; You can start foxdot interpreter with:
+;; You can start SuperCollider and foxdot interpreter with:
 ;; 
-;; Ctrl+c s (foxdot-start-foxdot)
+;; Ctrl+c Ctrl+s (foxdot-super-foxdot)
 ;; 
 ;; To quit foxdot: Alt+x kill-foxdot ENTER, or:
 ;; 
@@ -549,8 +549,8 @@ If you have not passed a buffer B, uses current buffer."
     (cons "Python-FoxDot" (make-sparse-keymap "FoxDot")))
   (define-key map [menu-bar foxdot quit-foxdot]
     '("Quit FoxDot" . foxdot-kill-sc-foxdot))
-  (define-key map [menu-bar foxdot start-foxdot]
-    '("Start FoxDot" . foxdot-start-foxdot))
+  (define-key map [menu-bar foxdot foxdot super-foxdot]
+    '("Start FoxDot" . foxdot-super-foxdot))
   (define-key map [menu-bar foxdot process-separator]
     '(menu-item "--"))
   (define-key map [menu-bar foxdot run-region]
