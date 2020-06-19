@@ -21,43 +21,24 @@ We assume that you are working in Linux.
 
     $ pip install FoxDot
 
-<b>(2)</b>  Assuming that you have installed SuperCollider, then surely you must have installed
-  the SuperCollider Emacs package. In Debian and Ubuntu: supercollider-emacs.
+<b>(2)</b>  Assuming that you have installed SuperCollider, run it and install the FoxDot quark:
 
-    $ sudo apt install supercollider-emacs
+    Quarks.install("FoxDot")
 
-  In your ~/.emacs configuration file add:
-
-    (require 'sclang)
-
-  Evaluate that line or restart Emacs and run the SuperCollider server typing
-  
-    Alt+x sclang-start ENTER.
-
-  Test the audio. In the *SCLang:Workspace* buffer type:
+Recompile the SuperCollider class library.  Test the audio. In the *SCLang:Workspace* buffer type:
 
     { SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play
-    Ctlc-c Ctl-c
 
    You must hear a simple sound. If you don't hear it, something is wrong,
    there is a problem with SuperCollider configuration or your audio system.
 
-<b>(3)</b> Install FoxDot quark, evaluating the following line in \*SCLang:Workspace\*
-buffer:
-
-    Quarks.install("FoxDot")
-
-Recompile the SuperCollider class library:
-
-    Alt-x sclang-recompile
-
-<b>(4)</b> Start FoxDot. In \*SCLang:Workspace\*, evaluate the following line:
+<b>(3)</b> Start FoxDot. If you get sounds, start FoxDot in SuperCollider:
 
     FoxDot.start
 
 SuperCollider is now listening for messages from FoxDot.
 
-<b>(5)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
+<b>(4)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 
     $ git clone https://github.com/superguaricho/foxdot-mode
 
@@ -70,9 +51,9 @@ Where «(expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d")» evaluates to �
 
 Evaluate those lines or restart Emacs.
 
-<b>(6)</b> Open a file with .py or .foxdot extension.
+<b>(5)</b> Open a file with .py or .foxdot extension.
 
-<b>(7)</b> Start foxdot, typing: Alt+x foxdot ENTER
+<b>(6)</b> Start foxdot, typing: Alt+x foxdot ENTER
 
 If you want FoxDot buffer launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
 
