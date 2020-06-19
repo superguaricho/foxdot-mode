@@ -31,13 +31,13 @@ Recompile the SuperCollider class library.  Test the audio. Type and interpret:
 
    You must hear a simple sound. If you don't hear it, something is wrong, there is a problem with SuperCollider configuration or your audio system.
 
-<b>(2)</b> Start FoxDot. If you get sounds, start FoxDot in SuperCollider:
+<b>(3)</b> Start FoxDot. If you get sounds, start FoxDot in SuperCollider:
 
     FoxDot.start
 
 SuperCollider is now listening for messages from FoxDot.
 
-<b>(3)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
+<b>(4)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 
     $ git clone https://github.com/superguaricho/foxdot-mode
 
@@ -50,9 +50,9 @@ Where «(expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d")» evaluates to �
 
 Evaluate those lines or restart Emacs.
 
-<b>(4)</b> Open a file with .py or .foxdot extension.
+<b>(5)</b> Open a file with .py or .foxdot extension.
 
-<b>(5)</b> Start foxdot, typing: Alt+x foxdot ENTER
+<b>(6)</b> Start foxdot, typing: Alt+x foxdot ENTER
 
 If you want FoxDot buffer launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
 
