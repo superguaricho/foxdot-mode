@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 numa.tortolero@gmail.com
 ;; Author: numa.tortolero@gmail.com
 ;; Homepage: https://github.com/superguaricho/foxdot-mode
-;; Version: 0 (alpha)
+;; Version: 0.01 (alpha)
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "24"))
 
@@ -128,9 +128,9 @@
 ;; Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 ;; Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 ;; 
-;; You can start SuperCollider and foxdot interpreter with:
+;; You can start foxdot interpreter with:
 ;; 
-;; Ctrl+c Ctrl+s (foxdot-super-foxdot)
+;; Ctrl+c Ctrl+s (foxdot-start-foxdot)
 ;; 
 ;; To quit foxdot: Alt+x kill-foxdot ENTER, or:
 ;; 
@@ -163,8 +163,6 @@
 ;;; Code:
 
 (require 'python)
-(require 'foxdot-scserver)
-(require 'foxdot-windows)
 
 (defvar foxdot-buffer-name "*FoxDot*")
 
@@ -172,7 +170,6 @@
   "import os
 import sys
 from FoxDot import *
-sys.ps1 = \"FoxDot>>> \"
 ")
 
 (defvar foxdot-mode-map nil)
@@ -398,7 +395,6 @@ If you have not passed a buffer B, uses current buffer."
   (interactive)
   (when (get-buffer foxdot-buffer-name)
     (with-current-buffer (get-buffer foxdot-buffer-name)
-      (comint-clear-buffer)
       (comint-send-input)
       (comint-clear-buffer)))
   )
@@ -408,14 +404,48 @@ If you have not passed a buffer B, uses current buffer."
   (get-buffer "*Python*")
   )
 
+(defun foxdot-set-prompt ()
+  "Set foxdot prompt."
+  (python-shell-send-string "sys.ps1 = \"FoxDot>>> \"" (get-process "Python"))
+  )
+
+(defun foxdot-error-kill-python ()
+  "Kill python because error."
+  (kill-process  (get-process "Python"))
+  (kill-buffer (or (get-buffer "*Python*") (get-buffer "*FoxDot*")))
+  (delete-other-windows)
+  )
+
+(defun foxdot-tracing-function (orig-fun &rest args)
+  "Foxdot tracing ARGS passed to ORIG-FUN function."
+  (if (or (string-match "Error sending message to SuperCollider server instance" (nth 1 args))
+	  (string-match "Error: No connection made to SuperCollider server instancee" (nth 1 args)))
+      (let ((p (get-process "Python")))
+	(advice-remove (process-filter p) #'foxdot-tracing-function)
+	(error "It seems that SuperCollider is not running: %S"
+	       (replace-regexp-in-string "\n$" "" (nth 1 args))))
+    (apply orig-fun args))
+  )
+
 (defun foxdot-init-foxdot-buffer ()
   "Initialize *FoxDot* buffer."
   (when (foxdot-python-buffer)
     (with-current-buffer (foxdot-python-buffer)
-      (python-shell-send-string fox-dot-cli-init-string)
       (pop-to-buffer (foxdot-python-buffer))
-      (rename-buffer foxdot-buffer-name)
-      (comint-clear-buffer)))
+      (python-shell-send-string fox-dot-cli-init-string (get-process "Python"))
+      (sit-for 5.0)
+      (if (save-excursion
+	    (with-current-buffer (foxdot-python-buffer)
+	      (goto-char (point-min))
+	      (re-search-forward "Error: No connection" nil t)))
+	  (kill-process (get-process "Python"))
+	(let ((p (get-process "Python")))
+	  (foxdot-set-prompt)
+	  (sit-for 1.0)
+	  (rename-buffer foxdot-buffer-name)
+	  (comint-send-input)
+	  (comint-clear-buffer)
+	  (advice-remove (process-filter p) #'foxdot-tracing-function)))))
   )
 
 ;;;###autoload
@@ -426,31 +456,22 @@ If you have not passed a buffer B, uses current buffer."
     (let ((python-shell-interpreter-args "")
           (fd-code-buffer (get-buffer (buffer-name))))
       (cond ((and (foxdot-python-buffer)
-		  (not (get-buffer "*FoxDot*"))
-		  (foxdot-init-foxdot-buffer)
-		  (foxdot-set-foxdot-in-all-buffers)))
-	     ((get-buffer "*FoxDot*") (foxdot-set-foxdot-mode))
-	     (t (run-python)
-		(sit-for 0.5)
-		(foxdot-init-foxdot-buffer)
-		(foxdot-set-foxdot-in-all-buffers)
-		(add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))))))
+		  (not (get-buffer "*FoxDot*")))
+	     (foxdot-init-foxdot-buffer))
+	    ((not (foxdot-python-buffer))
+	     (run-python)
+	     (advice-add (process-filter (get-process "Python")) :around #'foxdot-tracing-function)
+	     (foxdot-set-foxdot-in-all-buffers)
+	     (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
+	     (foxdot-init-foxdot-buffer)))))
   )
+
 ;;;###autoload
 (defalias 'start-foxdot 'foxdot-start-foxdot)
 (add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0)))
-(add-hook 'foxdot-mode-hook 'foxdot-mode-sc3-keybindings)
-(add-hook 'foxdot-mode-hook 'foxdot-mode-layout-keybindings)
 
 ;;;###autoload
-(defun foxdot-super-foxdot ()
-  "Run SC3 server and foxdot."
-  (interactive)
-  (add-hook 'sclang-library-startup-hook 'foxdot-start-sc3-foxdot)
-  (foxdot-run-sclang)
-  )
-;;;###autoload
-(defalias 'foxdot 'foxdot-super-foxdot)
+(defalias 'foxdot 'foxdot-sclang-start-foxdot)
 
 ;;
 
@@ -470,7 +491,7 @@ If you have not passed a buffer B, uses current buffer."
 (defun foxdot-kill-foxdot ()
   "Kill csound repl."
   (interactive)
-  (let ((b (get-buffer foxdot-buffer-name))
+  (let ((b (or (get-buffer foxdot-buffer-name) (get-buffer "*Python*")))
 	(c (current-buffer)))
     (if b (with-current-buffer b (kill-buffer-and-window))
       (error "There is not *FoxDot* buffer"))
@@ -484,21 +505,12 @@ If you have not passed a buffer B, uses current buffer."
 (defalias 'foxdot-quit-foxdot 'foxdot-kill-foxdot)
 (defalias 'quit-foxdot 'foxdot-kill-foxdot)
 
-;;;###autoload
-(defun foxdot-kill-sc-foxdot ()
-  "If running, kill SC3 and foxdot."
-  (interactive)
-  (if (get-process sclang-process) (foxdot-kill-sc3))
-  (foxdot-kill-foxdot)
-  )
-(defalias 'kill-foxdot 'foxdot-kill-sc-foxdot)
-
 ;;
 
 (defun foxdot-mode-keybindings (map)
   "FoxDot keybindings in MAP."
   (define-key map (kbd "C-c C-s") 'foxdot-start-foxdot)
-  (define-key map [?\C-c ?\q] 'foxdot-kill-sc-foxdot)
+  (define-key map [?\C-c ?\q] 'foxdot-kill-foxdot)
   (define-key map [?\C-c ?\C-c] 'foxdot-run-line)
   (define-key map [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (define-key map [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
@@ -513,20 +525,13 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   (define-key map [?\C-c ?\l] 'foxdot-load-buffer)
 
-  (define-key map (kbd "C-c s") 'foxdot-run-sclang)
-  (define-key map [?\C-c ?\.] 'foxdot-kill-sc3)
-  (define-key map (kbd "C-c C-t") 'foxdot-test-sc3)
-
-  (define-key map (kbd "C-c 3") 'foxdot-set-sc3-layout)
-  (define-key map (kbd "C-c f") 'foxdot-set-foxdot-layout)
-  (define-key map (kbd "C-c w") 'foxdot-sc3-foxdot-layout)
   )
 
 (defun turn-on-foxdot-keybindings ()
   "Foxdot keybindings in the local map."
   (interactive)
   (local-set-key (kbd "C-c C-s") 'foxdot-start-foxdot)
-  (local-set-key [?\C-c ?\q] 'foxdot-kill-sc-foxdot)
+  (local-set-key [?\C-c ?\q] 'foxdot-kill-foxdot)
   (local-set-key [?\C-c ?\C-c] 'foxdot-run-line)
   (local-set-key [?\C-c ?\C-g] 'foxdot-run-line-and-go)
   (local-set-key [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
@@ -548,9 +553,9 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [menu-bar foxdot]
     (cons "Python-FoxDot" (make-sparse-keymap "FoxDot")))
   (define-key map [menu-bar foxdot quit-foxdot]
-    '("Quit FoxDot" . foxdot-kill-sc-foxdot))
-  (define-key map [menu-bar foxdot foxdot super-foxdot]
-    '("Start FoxDot" . foxdot-super-foxdot))
+    '("Quit FoxDot" . foxdot-kill-foxdot))
+  (define-key map [menu-bar foxdot sclang-start-foxdot]
+    '("Start FoxDot" . foxdot--foxdot))
   (define-key map [menu-bar foxdot process-separator]
     '(menu-item "--"))
   (define-key map [menu-bar foxdot run-region]
@@ -573,10 +578,6 @@ If you have not passed a buffer B, uses current buffer."
     '("Run line" . foxdot-run-line))
   (define-key map [menu-bar foxdot foxdot-separator]
     '(menu-item "--"))
-  (define-key map [menu-bar foxdot kill-sc3]
-    '("Kill SC3" . foxdot-kill-sc3))
-  (define-key map [menu-bar foxdot run-sclang]
-    '("Run SC3" . foxdot-run-sclang))
   )
 
 (unless foxdot-mode-map
