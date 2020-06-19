@@ -87,6 +87,14 @@ Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* pro
     Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
     Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 
+You can start foxdot interpreter with:
+
+    Ctrl+c Ctrl+s (foxdot-start-foxdot)
+
+To quit foxdot: Alt+x kill-foxdot ENTER, or:
+ 
+    Ctrl+c q (foxdot-kill-foxdot)
+
 <h2>Problems</h2>
 
 This code is in alpha state, is not very tested (June, 2020).
