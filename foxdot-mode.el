@@ -32,43 +32,24 @@
 ;; (1) If you have not doen it, install FoxDot.  From a shell command line do:
 ;;         $ pip install FoxDot
 ;;
-;; (2)  Assuming that you have installed SuperCollider, then surely you must have installed
-;; the SuperCollider Emacs package. In Debian and Ubuntu: supercollider-emacs.
+;; (2) Assuming that you have installed SuperCollider, then run it and install the FoxDot quark:
+;;
+;;   Quarks.install("FoxDot")
 ;; 
-;; $ sudo apt install supercollider-emacs
+;; Recompile the SuperCollider class library. Test the audio. Type and interpret:
 ;; 
-;; In your ~/.emacs configuration file add:
-;; 
-;; (require 'sclang)
-;; 
-;; Evaluate that line or restart Emacs and run the SuperCollider server typing
-;; 
-;; Alt+x sclang-start ENTER.
-;; 
-;; Test the audio. In the *SCLang:Workspace* buffer type:
-;; 
-;; { SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play
-;; Ctlc-c Ctl-c
-;; 
+;;   { SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play
+;;
 ;; You must hear a simple sound. If you don't hear it, something is wrong,
 ;; there is a problem with SuperCollider configuration or your audio system.
 ;; 
-;; (3) Install FoxDot quark, evaluating the following line in *SCLang:Workspace*
-;; buffer:
-;; 
-;; Quarks.install("FoxDot")
-;; 
-;; Recompile the SuperCollider class library:
-;;
-;; Alt+x sclang-recompile
-;; 
-;; (4) Start FoxDot. In *SCLang:Workspace*, evaluate the following line:
+;; (3) Start FoxDot. In *SCLang:Workspace*, evaluate the following line:
 ;; 
 ;; FoxDot.start
 ;; 
 ;; SuperCollider is now listening for messages from FoxDot.
 ;; 
-;; (5) Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some
+;; (4) Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some
 ;; directory like "\~/.emacs.d" or any directory in "load-path" list. For example,
 ;; from the command line, you can create a directory like "\~/.emacs.d/site-lisp/"
 ;; (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp),
@@ -86,9 +67,9 @@
 ;; 
 ;; Evaluate those lines or restart Emacs.
 ;; 
-;; (6) Open a file with .py or .foxdot extension.
+;; (5) Open a file with .py or .foxdot extension.
 ;; 
-;; (7) Start foxdot, typing: Alt+x foxdot ENTER
+;; (6) Start foxdot, typing: Alt+x foxdot ENTER
 ;; 
 ;; If you want FoxDot buffer launch when you open "myfile.foxdot", add the
 ;; following lines to ~/.emacs:
@@ -467,11 +448,9 @@ If you have not passed a buffer B, uses current buffer."
   )
 
 ;;;###autoload
+(defalias 'foxdot 'foxdot-start-foxdot)
 (defalias 'start-foxdot 'foxdot-start-foxdot)
 (add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0)))
-
-;;;###autoload
-(defalias 'foxdot 'foxdot-sclang-start-foxdot)
 
 ;;
 
@@ -503,7 +482,7 @@ If you have not passed a buffer B, uses current buffer."
       (setq auto-mode-alist (delete '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode) auto-mode-alist)))
   )
 (defalias 'foxdot-quit-foxdot 'foxdot-kill-foxdot)
-(defalias 'quit-foxdot 'foxdot-kill-foxdot)
+(defalias 'kill-foxdot 'foxdot-kill-foxdot)
 
 ;;
 
