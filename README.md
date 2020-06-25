@@ -17,27 +17,13 @@ Inspiration: tidal.el (from <a href="https://tidalcycles.org/index.php/Welcome">
 
 We assume that you are working in Linux.
 
-<b>(1)</b> If you have not doen it, install FoxDot. From a shell command line do:
+<b>(1)</b> If you have not doen it, install FoxDot python library. From a shell command line do:
 
     $ pip install FoxDot
 
-<b>(2)</b>  Assuming that you have installed SuperCollider, run it and install the FoxDot quark:
+<b>(2)</b> Install Emacs FoxDot mode.
 
-    Quarks.install("FoxDot")
-
-Recompile the SuperCollider class library.  Test the audio. Type and interpret:
-
-    { SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play
-
-   You must hear a simple sound. If you don't hear it, something is wrong, there is a problem with SuperCollider configuration or your audio system.
-
-<b>(3)</b> Start FoxDot. If you get sounds, start FoxDot in SuperCollider:
-
-    FoxDot.start
-
-SuperCollider is now listening for messages from FoxDot.
-
-<b>(4)</b> Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
+Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 
     $ git clone https://github.com/superguaricho/foxdot-mode
 
@@ -50,18 +36,43 @@ Where «(expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d")» evaluates to �
 
 Evaluate those lines or restart Emacs.
 
-<b>(5)</b> Open a file with .py or .foxdot extension.
+(3) Install the SuperCollider FoxDot quark.
 
-<b>(6)</b> Start foxdot, typing: Alt+x foxdot ENTER
+Assuming that you have installed SuperCollider, from Ecmacs do Alt-x install-fd
 
-If you want FoxDot buffer launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
+This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark and recompile the SuperCollider class library.
+
+Youst hear a simple sound. If not, do Alt+x test-sc3 ENTER. If you don't hear it, there is a problem with SuperCollider or your audio system.
+
+(4) Start foxdot.
+
+If you hearded the sound, you can continue.
+
+Open a file with .foxdot extension.  Type Alt+x foxdot ENTER. This run sclang and FoxDot process buffers.
+
+Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  *FoxDot* and the *SCLang:SC3* buffers.
+
+SuperCollider is now listening for messages from FoxDot.
+
+(5) Enjoy now. Play with some codes.
+
+For example, type in your workspace:
+
+    p1 >> pluck([12], dur=0.25, echo=0.8)
+
+With the cursor over the line type Ctrl+c Ctrl+c.
+
+Do Ctrl+c Ctrl+u to stop the sounds.
+
+If you want FoxDot launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot)
 
-If you do this, don't need use Alt+x foxdot to play. The FoxDot interpreter will launch when you open a .foxdot file.
+If you do this, don't need use Alt+x foxdot to play. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode add instead:
 
-That is all.
+    (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
+    (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
 
 I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added these lines to my ~/.emacs file:
 
@@ -87,13 +98,34 @@ Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* pro
     Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
     Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 
-You can start foxdot interpreter with:
+You can start sclang and foxdot interpreters with:
 
-    Ctrl+c Ctrl+s (foxdot-start-foxdot)
+    Ctrl+c Ctrl+s (foxdot-sclang-foxdot-start)
 
-To quit foxdot: Alt+x kill-foxdot ENTER, or:
+To quit sclang and foxdot: Alt+x kill-foxdot ENTER, or:
  
-    Ctrl+c q (foxdot-kill-foxdot)
+    Ctrl+c Ctrl+k (foxdot-sclang-foxdot-quit)
+
+Other intesting keys:
+
+    Ctrl+c s (foxdot-sclang-start). Run sclang process only.
+    Ctrl+c k (foxdot-sclang-kill).  Kill sclang process only.
+    Ctrl+c f (foxdot-start-foxdot). Run python foxdot only.
+    Ctrl+c q (foxdot-kill-foxdot).  Kill python fpcdpt only.
+
+Layouts:
+
+Foxdot-mode can show three layouts:
+
+    Ctrl+c w (foxdot-set-sc3-layout). Three vertical windows: workspace, foxdot and sclang. 
+    Ctrl+c Ctrl+w (foxdot-set-foxdot-layout). Two windows: workspace and foxdot.
+    Ctrl+c 3 (foxdot-sc3-foxdot-layout). Two windows: workspace and sclang.
+
+<h2>Todo</h2>
+
+Add to foxdot-sc3-mode.el functions to interactively work with sclang from a buffer with sc3-mode.
+
+Some code hiliting to foxdot-mode.
 
 <h2>Problems</h2>
 
