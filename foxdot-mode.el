@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 numa.tortolero@gmail.com
 ;; Author: numa.tortolero@gmail.com
 ;; Homepage: https://github.com/superguaricho/foxdot-mode
-;; Version: 0.01 (alpha)
+;; Version: 1.00 (alpha)
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "24"))
 
@@ -32,102 +32,140 @@
 ;; (1) If you have not doen it, install FoxDot.  From a shell command line do:
 ;;         $ pip install FoxDot
 ;;
-;; (2) Assuming that you have installed SuperCollider, then run it and install the FoxDot quark:
+;; (2) Install Emacs FoxDot mode.
+;; Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or
+;; any directory in "load-path" list.  For example, from the command line, you can
+;; create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp),
+;; move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 ;;
-;;   Quarks.install("FoxDot")
-;; 
-;; Recompile the SuperCollider class library. Test the audio. Type and interpret:
-;; 
-;;   { SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play
-;;
-;; You must hear a simple sound. If you don't hear it, something is wrong,
-;; there is a problem with SuperCollider configuration or your audio system.
-;; 
-;; (3) Start FoxDot. In *SCLang:Workspace*, evaluate the following line:
-;; 
-;; FoxDot.start
-;; 
-;; SuperCollider is now listening for messages from FoxDot.
-;; 
-;; (4) Install Emacs FoxDot mode. Clone the foxdot-mode project from git in some
-;; directory like "\~/.emacs.d" or any directory in "load-path" list. For example,
-;; from the command line, you can create a directory like "\~/.emacs.d/site-lisp/"
-;; (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp),
-;; and clone the repository:
-;; 
 ;; $ git clone https://github.com/superguaricho/foxdot-mode
-;; 
+;;
 ;; In your "\~/.emacs" initialization file, add the following lines:
-;; 
-;; (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
-;; (require 'foxdot-mode)
-;; 
+;;
+;;   (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d"))
+;;   (require 'foxdot-mode)
+;;
 ;; Where «(expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d")» evaluates to
 ;; «/home/user/.emacs.d/site-lisp/foxdot-mode».
-;; 
+;;
 ;; Evaluate those lines or restart Emacs.
-;; 
-;; (5) Open a file with .py or .foxdot extension.
-;; 
-;; (6) Start foxdot, typing: Alt+x foxdot ENTER
-;; 
-;; If you want FoxDot buffer launch when you open "myfile.foxdot", add the
+;;
+;; (3) Install the SuperCollider FoxDot quark.
+;;
+;; Assuming that you have installed SuperCollider, from Ecmacs do Alt-x install-fd
+;;
+;; This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark
+;; and recompile the SuperCollider class library.
+;;
+;; Youst hear a simple sound. If not, do Alt+x test-sc3 ENTER. If you don't hear it,
+;; there is a problem with SuperCollider or your audio system.
+;;
+;; (4) Start foxdot.
+;; If you hearded the sound, you can continue.
+;;
+;; Open a file with .foxdot extension.  Type Alt+x foxdot ENTER.
+;; This run sclang and FoxDot process buffers.
+;;
+;; Wait and you will see three horizontal windows: the .foxdot file (your workspace),
+;; the  *FoxDot* and the *SCLang:SC3* buffers.
+;;
+;; (5) Enjoy now. Play with some codes.
+;; For example, type in your workspace:
+;;
+;; p1 >> pluck([12], dur=0.25, echo=0.8)
+;;
+;; With the cursor over the line type Ctrl+c Ctrl+c.
+;;
+;; Do Ctrl+c Ctrl+u to stop the sounds.
+;;
+;; ;;
+;;
+;; If you want FoxDot buffer launch when you open any "myfile.foxdot", add the
 ;; following lines to ~/.emacs:
-;; 
+;;
 ;; (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
 ;; (add-hook 'foxdot-mode-hook 'foxdot)
-;; 
-;; If you do this, don't need use Alt+x foxdot. The FoxDot interpreter will
-;; launch when you open a .foxdot file.
-;; 
-;; That is all.
-;; 
+;;
+;; If you do this, don't need use Alt+x foxdot.  The FoxDot interpreter will
+;; launch anytime you open a .foxdot file.
+;;
+;; ;;
+;;
 ;; I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and
 ;; added these lines to my ~/.emacs file:
-;; 
+;;
 ;; (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" user-emacs-directory))
 ;; (require 'foxdot-mode)
 ;; (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
 ;; (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
-;; 
+;;
 ;; Now, when I open a .foxdot file in Emacs, it launchs SuperCollider, start FoxDot,
 ;; creates a *FoxDot* process and I can write and evaluate my livecoding lines,
 ;; seting the cursor over the line that I want execute and using the folowing keys:
-;; 
+;;
 ;; Ctrl+c Ctrl+c (foxdot-run-line)). Send a line to the interpreter.
-;; Ctrl+c Ctrl+g (foxdot-run-line-and-go). Send a line to the interpreter and
-;; advance the cursor to he next non blank line.
-;; Ctrl+c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
-;; Ctrl+c Ctrl+b (foxdot-run-block-and-go). Send the block where is the cursor to the interpreter and
-;; advance the cursor to he next non blank line.
-;; Ctrl+c e (foxdot-execute-block). Send the paragraphe or block where is the cursor with echo to the interpreter.
-;; Ctrl+c Ctrl+e (foxdot-execute-block-and-go). Send the paragraphe or block where is the cursor with echo to the interpreter
+;; Ctrl+c Ctrl+g (foxdot-run-line-and-go).  Send a line to the interpreter and
+;; advance the cursor to the next non blank line.
+;; Ctrl+c b (foxdot-run-block).  Send the block where is the cursor to the interpreter.
+;; Ctrl+c Ctrl+b (foxdot-run-block-and-go).  Send the block where is the cursor to the interpreter and
+;; advance the cursor to the next non blank line.
 ;; and go to the next non blank line.
-;; Ctrl+c Ctrl+r (foxdot-run-region). Send the selected region to the interpreter.
+;; Ctrl+c Ctrl+r (foxdot-run-region).  Send the selected region to the interpreter.
 ;; Ctrl+c n (foxdot-run-block-by-lines).  Send a block line by line.
 ;; Ctrl+c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
 ;; Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
 ;; Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
-;; 
-;; You can start foxdot interpreter with:
-;; 
-;; Ctrl+c Ctrl+s (foxdot-start-foxdot)
-;; 
-;; To quit foxdot: Alt+x kill-foxdot ENTER, or:
-;; 
-;; Ctrl+c q (foxdot-kill-foxdot)
-;; 
+;;
+;; You can start sclang and foxdot interpreters with:
+;;
+;; Ctrl+c Ctrl+s (foxdot-sclang-foxdot-start)
+;;
+;; To quit sclang and foxdot: Alt+x kill-foxdot ENTER, or:
+;;
+;; Ctrl+c Ctrl+k (foxdot-sclang-foxdot-quit)
+;;
+;; Other intesting keys:
+;;
+;; Ctrl+c s (foxdot-sclang-start).  Run sclang process only.
+;; Ctrl+c k (foxdot-sclang-kill).  Kill sclang process only.
+;; Ctrl+c f (foxdot-start-foxdot).  Run python foxdot only.
+;; Ctrl+c q (foxdot-kill-foxdot).  Kill python foxdot only.
+;;
+;; Layouts:
+;;
+;; Foxdot-mode can show three layouts:
+;;
+;;  Ctrl+c w (foxdot-set-sc3-layout).  Three vertical windows: workspace, foxdot and sclang.
+;;  Ctrl+c Ctrl+w (foxdot-set-foxdot-layout).  Two windows: workspace and foxdot.
+;;  Ctrl+c 3 (foxdot-sc3-foxdot-layout).  Two windows: workspace and sclang.
+;;
+;; Todo:
+;;
+;; Add to foxdot-sc3-mode.el functions to interactively work with sclang from a buffer with
+;; sc3-mode.
+;;
+;; Some code hiliting to foxdot-mode.
+;;
 ;; Problems:
-;; 
+;;
 ;; This code is in alpha state, is not very tested (June, 2020).
-;; 
+;;
 ;; Acknowledgments:
-;; 
+;;
 ;; Thanks to Jean Argenty for its ideas and help testing this codes.
-;; 
+
 ;;; Code:
 
 (require 'python)
+(require 'foxdot-sc3-mode)
+(require 'foxdot-layouts)
+
+(let ((py-interpreter (executable-find "python3")))
+  (if py-interpreter
+      (setq python-shell-interpreter py-interpreter
+            python-shell-interpreter-args ""
+            elpy-rpc-python-command py-interpreter)
+    (message "Seems that python3 is not installed.  Foxdot works with python 3.")))
 
 (defvar foxdot-buffer-name "*FoxDot*")
 
@@ -156,10 +194,10 @@ from FoxDot import *
   (let ((current-buffer (current-buffer)))
     (let* ((b (get-buffer foxdot-buffer-name)))
       (cond (b
-	     (switch-to-buffer-other-window b)
-	     (insert string)
-	     (comint-send-input))
-	    (t (message "There is not *FoxDot* buffer.")))))
+             (switch-to-buffer-other-window b)
+             (insert string)
+             (comint-send-input))
+            (t (message "There is not *FoxDot* buffer.")))))
   )
 
 (defun foxdot-shell-newline ()
@@ -170,7 +208,7 @@ from FoxDot import *
       (comint-send-input)))
   )
 
-(defun foxdot-goto-next-non-blank-line ()
+(defun foxdot-next-non-blank-line ()
   "Move to the nex non-blank line."
   (interactive)
   (goto-char (line-end-position))
@@ -194,10 +232,8 @@ from FoxDot import *
 (defun foxdot-run-line-and-go ()
   "Send the current line to the interpreter."
   (interactive)
-  (let ((b (current-buffer)))
-    (foxdot-run-line)
-    (with-current-buffer b
-      (foxdot-goto-next-non-blank-line)))
+  (foxdot-run-line)
+  (foxdot-next-non-blank-line)
   )
 
 (defun foxdot-hush ()
@@ -213,9 +249,9 @@ from FoxDot import *
   (interactive)
   (if (use-region-p)
       (python-shell-send-region (region-beginning)
-				(region-end) nil)
+                                (region-end) nil)
     (message "No region selected"))
-    )
+  )
 
 (defun foxdot-run-region ()
   "Send the current block to the interpreter."
@@ -231,28 +267,29 @@ from FoxDot import *
 (defun foxdot-run-block ()
   "Send the current block to the interpreter."
   (interactive)
-  (save-excursion (mark-paragraph -1) (foxdot-run-region) (deactivate-mark t))
+  (save-excursion (mark-paragraph -1) (foxdot-run-region))
   )
 
 (defun foxdot-run-block-and-go ()
   "Send the current block to the interpreter."
   (interactive)
+  (foxdot-run-block)
   (mark-paragraph -1)
-  (foxdot-run-region)
   (deactivate-mark t)
-  (foxdot-goto-next-non-blank-line)
+  (foxdot-next-non-blank-line)
   )
+
+;;;;
 
 (defun foxdot-is-char-after (char)
   "Test if CHAR character is before the point."
   (string= (char-to-string (char-after)) char)
   )
 
+
 (defun foxdot-end-of-line-point ()
   "Return the point of current line."
-  (save-excursion
-    (end-of-line)
-    (point))
+  (save-excursion (end-of-line) (point))
   )
 
 (defun foxdot-empty-line-p ()
@@ -281,8 +318,10 @@ from FoxDot import *
   (interactive)
   (foxdot-run-block-by-lines)
   (forward-paragraph)
-  (foxdot-goto-next-non-blank-line)
+  (foxdot-next-non-blank-line)
   )
+
+;;;;
 
 (defun foxdot-execute-block ()
   "Execute the current block in the interpreter with echo."
@@ -291,15 +330,15 @@ from FoxDot import *
     (save-excursion
       (mark-paragraph -1)
       (save-selected-window
-	(if (use-region-p)
-	    (let* ((b (get-buffer foxdot-buffer-name)))
-	      (cond (b
-		     (append-to-buffer (get-buffer foxdot-buffer-name)
-				       (region-beginning)
+        (if (use-region-p)
+            (let* ((b (get-buffer foxdot-buffer-name)))
+              (cond (b
+                     (append-to-buffer (get-buffer foxdot-buffer-name)
+                                       (region-beginning)
                                        (region-end))
-		     (switch-to-buffer-other-window b)
-		     (comint-send-input))
-		    (t (message "There is not *FoxDot* buffer."))))))
+                     (switch-to-buffer-other-window b)
+                     (comint-send-input))
+                    (t (message "There is not *FoxDot* buffer."))))))
       (pulse-momentary-highlight-region (mark) (point))
       (deactivate-mark t)))
   )
@@ -309,44 +348,21 @@ from FoxDot import *
   (interactive)
   (foxdot-execute-block)
   (forward-paragraph)
-  (foxdot-goto-next-non-blank-line)
+  (foxdot-next-non-blank-line)
   )
 
-;;
-
-(defun foxdot-set-removing-start-hooks ()
-  "Set foxdot-mode in current buffer removing sensible hooks when need it.
-This avoids launch multiple FoxDot interpreters when you start foxdot."
-  (cond ((member 'foxdot-start-foxdot foxdot-mode-hook)
-	 (remove-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
-	 (foxdot-mode)
-	 (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot))
-	((member 'start-foxdot foxdot-mode-hook)
-	 (remove-hook 'foxdot-mode-hook 'start-foxdot)
-	 (foxdot-mode)
-	 (add-hook 'foxdot-mode-hook 'start-foxdot))
-	((member 'foxdot foxdot-mode-hook)
-	 (remove-hook 'foxdot-mode-hook 'foxdot)
-	 (foxdot-mode)
-	 (add-hook 'foxdot-mode-hook 'foxdot))
-	(t (foxdot-mode)))
-  )
-
-(defun foxdot-surely-set-mode (b)
-  "Set surely 'foxdot-mode' to B."
-  (with-current-buffer b (foxdot-set-removing-start-hooks))
-  )
+;;;;
 
 (defun foxdot-set-foxdot-mode (&optional b)
   "If B buffer has .py or .foxdot extension, set 'foxdot-mode'.
 If you have not passed a buffer B, uses current buffer."
   (interactive)
   (let* ((buf (if b b (current-buffer)))
-	 (bufname (buffer-name buf)))
+         (bufname (buffer-name buf)))
     (when (and (or (string-match "\\.py\\([0-9]\\|[iw]\\)?$" bufname)
-		   (string-match "\\.foxdot$" bufname))
-	       (not (equal major-mode 'foxdot-mode)))
-      (foxdot-surely-set-mode buf)))
+                   (string-match "\\.foxdot$" bufname))
+               (not (equal major-mode 'foxdot-mode)))
+      (with-current-buffer buf (foxdot-mode))))
   )
 
 (defun foxdot-set-foxdot-in-all-buffers ()
@@ -384,57 +400,64 @@ If you have not passed a buffer B, uses current buffer."
 (defun foxdot-tracing-function (orig-fun &rest args)
   "Foxdot tracing ARGS passed to ORIG-FUN function."
   (if (or (string-match "Error sending message to SuperCollider server instance" (nth 1 args))
-	  (string-match "Error: No connection made to SuperCollider server instancee" (nth 1 args)))
+          (string-match "Error: No connection made to SuperCollider server instancee" (nth 1 args)))
       (let ((p (get-process "Python")))
-	(advice-remove (process-filter p) #'foxdot-tracing-function)
-	(error "It seems that SuperCollider is not running: %S"
-	       (replace-regexp-in-string "\n$" "" (nth 1 args))))
+        (advice-remove (process-filter p) #'foxdot-tracing-function)
+        (error "It seems that SuperCollider is not running: %S"
+               (replace-regexp-in-string "\n$" "" (nth 1 args))))
     (apply orig-fun args))
   )
 
 (defun foxdot-init-foxdot-buffer ()
   "Initialize *FoxDot* buffer."
-  (when (foxdot-python-buffer)
-    (with-current-buffer (foxdot-python-buffer)
-      (pop-to-buffer (foxdot-python-buffer))
-      (python-shell-send-string fox-dot-cli-init-string (get-process "Python"))
-      (sit-for 5.0)
-      (if (save-excursion
-	    (with-current-buffer (foxdot-python-buffer)
-	      (goto-char (point-min))
-	      (re-search-forward "Error: No connection" nil t)))
-	  (kill-process (get-process "Python"))
-	(let ((p (get-process "Python")))
-	  (foxdot-set-prompt)
-	  (sit-for 1.0)
-	  (rename-buffer foxdot-buffer-name)
-	  (comint-send-input)
-	  (comint-clear-buffer)
-	  (advice-remove (process-filter p) #'foxdot-tracing-function)))))
+  (with-current-buffer (current-buffer)
+    (when (foxdot-python-buffer)
+      (with-current-buffer (foxdot-python-buffer)
+	(pop-to-buffer (foxdot-python-buffer))
+	(python-shell-send-string fox-dot-cli-init-string (get-process "Python"))
+	(sit-for 3.0)
+	(if (save-excursion
+              (with-current-buffer (foxdot-python-buffer)
+		(goto-char (point-min))
+		(re-search-forward "Error: No connection" nil t)))
+            (kill-process (get-process "Python"))
+          (let ((p (get-process "Python")))
+            (foxdot-set-prompt)
+            (sit-for 1.0)
+            (rename-buffer foxdot-buffer-name)
+            (comint-send-input)
+            (comint-clear-buffer)
+            (advice-remove (process-filter p) #'foxdot-tracing-function)))))
+    (if (get-buffer "*FoxDot*")  (foxdot-sc3-foxdot-layout)))
   )
+				 
+(defun foxdot-initialize ()
+  "Set tracing, foxdot buffers and `auto-mode-alist'."
+  (advice-add (process-filter (get-process "Python")) :around #'foxdot-tracing-function)
+  (foxdot-set-foxdot-in-all-buffers)
+  (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
+  )
+;; (advice-remove (process-filter (get-process "Python")) #'foxdot-tracing-function)
 
 ;;;###autoload
 (defun foxdot-start-foxdot ()
   "Start FoxDot Interpreter."
   (interactive)
-  (save-selected-window
-    (let ((python-shell-interpreter-args "")
-          (fd-code-buffer (get-buffer (buffer-name))))
-      (cond ((and (foxdot-python-buffer)
-		  (not (get-buffer "*FoxDot*")))
-	     (foxdot-init-foxdot-buffer))
-	    ((not (foxdot-python-buffer))
-	     (run-python)
-	     (advice-add (process-filter (get-process "Python")) :around #'foxdot-tracing-function)
-	     (foxdot-set-foxdot-in-all-buffers)
-	     (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
-	     (foxdot-init-foxdot-buffer)))))
+  (with-current-buffer (current-buffer)
+    (save-selected-window
+      (let ((python-shell-interpreter-args ""))
+	(if (get-buffer "*FoxDot*")
+	    (message "There is a *FoxDot* buffer.")
+	  (when (not (foxdot-python-buffer))
+	    (run-python)
+            (foxdot-initialize)
+            (foxdot-init-foxdot-buffer))))))
   )
 
 ;;;###autoload
-(defalias 'foxdot 'foxdot-start-foxdot)
 (defalias 'start-foxdot 'foxdot-start-foxdot)
-(add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0)))
+(defalias 'foxdot-start 'foxdot-start-foxdot)
+(if (featurep 'flycheck) (add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0))))
 
 ;;
 
@@ -455,10 +478,11 @@ If you have not passed a buffer B, uses current buffer."
   "Kill csound repl."
   (interactive)
   (let ((b (or (get-buffer foxdot-buffer-name) (get-buffer "*Python*")))
-	(c (current-buffer)))
+        (c (current-buffer))
+        (s (get-buffer "*SC3:SCLang*")))
+    (if s (with-current-buffer s (kill-buffer-and-window)))
     (if b (with-current-buffer b (kill-buffer-and-window))
       (error "There is not *FoxDot* buffer"))
-    (if (sclang-get-process) (sclang-kill) (message "There is not SC3 process runing."))
     (foxdot-set-python-in-all-buffers)
     (switch-to-buffer c)
     (delete-other-windows))
@@ -468,48 +492,107 @@ If you have not passed a buffer B, uses current buffer."
 (defalias 'foxdot-quit-foxdot 'foxdot-kill-foxdot)
 (defalias 'kill-foxdot 'foxdot-kill-foxdot)
 
-;;
+;;;;
+
+(declare-function sc3-start-process "foxdot-sc3-mode")
+(declare-function sc3-kill-process "foxdot-sc3-mode")
+(declare-function foxdot-sc3-foxdot-layout "foxdot-sc3-mode")
+
+(defun foxdot-sclang-advice (orig-fun &rest args)
+  "Foxdot tracing ARGS passed to ORIG-FUN function."
+  (when (string-match "Listening for messages from FoxDot" (nth 1 args))
+    (advice-remove
+     (process-filter (get-process "sc3:sclang")) #'foxdot-sclang-advice)
+    (foxdot-start-foxdot)
+    (foxdot-sc3-foxdot-layout))
+  (apply orig-fun args)
+  )
+
+(defun foxdot-sclang-foxdot-start ()
+  "Start SCLang and FoxDot."
+  (interactive)
+  (when (sc3-start-process)
+    (advice-add (process-filter (get-process "sc3:sclang")) :around #'foxdot-sclang-advice))
+  )
+(defalias 'foxdot 'foxdot-sclang-foxdot-start)
+
+(defun foxdot-sc3-kill-process ()
+  "Kill SCLang process."
+  (interactive)
+  (sc3-kill-process)
+  )
+
+(defun foxdot-sclang-foxdot-quit ()
+  "Quit SCLang and FoxDot."
+  (interactive)
+  (foxdot-sc3-kill-process)
+  (foxdot-kill-foxdot)
+  )
+
+(defalias 'install-foxdot-quark 'sc3-install-foxdot-quark)
+(defalias 'recompile-classlib   'sc3-recompile-classlib)
+(defalias 'foxdot-quark-start   'sc3-foxdot-quark-start)
+(defalias 'test-audio           'sc3-test-audio)
 
 (defun foxdot-mode-keybindings (map)
   "FoxDot keybindings in MAP."
-  (define-key map (kbd "C-c C-s") 'foxdot-start-foxdot)
-  (define-key map [?\C-c ?\q] 'foxdot-kill-foxdot)
+  (define-key map (kbd "C-c C-s") 'foxdot-sclang-foxdot-start)
+  (define-key map (kbd "C-c C-k") 'foxdot-sclang-foxdot-quit)
+  (define-key map (kbd "C-c s") 'sc3-start-process)
+  (define-key map (kbd "C-c k") 'fsc3-kill-process)
+  (define-key map (kbd "C-c f") 'foxdot-start-foxdot)
+  (define-key map (kbd "C-c q") 'foxdot-kill-foxdot)
   (define-key map [?\C-c ?\C-c] 'foxdot-run-line)
   (define-key map [?\C-c ?\C-g] 'foxdot-run-line-and-go)
-  (define-key map [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
+  (define-key map [?\C-c ?\g]   'foxdot-next-non-blank-line)
   (define-key map (kbd "C-c b") 'foxdot-run-block)
   (define-key map [?\C-c ?\C-b] 'foxdot-run-block-and-go)
   (define-key map (kbd "C-c e") 'foxdot-execute-block)
   (define-key map [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (define-key map [?\C-c ?\C-r] 'foxdot-run-region)
   (define-key map [?\C-c ?\C-n] 'foxdot-run-block-by-lines)
-  (define-key map [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
+  (define-key map [?\C-c ?\o]   'foxdot-run-block-by-lines-and-go)
   (define-key map [?\C-c ?\C-u] 'foxdot-hush)
   (define-key map [?\C-c ?\C-a] 'foxdot-clear-foxdot)
-  (define-key map [?\C-c ?\l] 'foxdot-load-buffer)
-
+  ;;  (define-key map [?\C-c ?\l] 'foxdot-load-buffer)
+  (define-key map (kbd "C-c w") 'foxdot-set-sc3-layout)
+  (define-key map (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
+  (define-key map (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
   )
 
 (defun turn-on-foxdot-keybindings ()
   "Foxdot keybindings in the local map."
   (interactive)
-  (local-set-key (kbd "C-c C-s") 'foxdot-start-foxdot)
-  (local-set-key [?\C-c ?\q] 'foxdot-kill-foxdot)
+  (local-set-key (kbd "C-c C-s") 'foxdot-sclang-foxdot-start)
+  (local-set-key (kbd "C-c C-k") 'foxdot-sclang-foxdot-quit)
+  (local-set-key (kbd "C-c s") 'foxdot-sc3-start-process)
+  (local-set-key (kbd "C-c k") 'foxdot-sc3-kill-process)
+  (local-set-key (kbd "C-c f") 'foxdot-start-foxdot)
+  (local-set-key (kbd "C-c q") 'foxdot-kill-foxdot)
   (local-set-key [?\C-c ?\C-c] 'foxdot-run-line)
   (local-set-key [?\C-c ?\C-g] 'foxdot-run-line-and-go)
-  (local-set-key [?\C-c ?\g] 'foxdot-goto-next-non-blank-line)
+  (local-set-key [?\C-c ?\g]   'foxdot-next-non-blank-line)
   (local-set-key (kbd "C-c b") 'foxdot-run-block)
   (local-set-key [?\C-c ?\C-b] 'foxdot-run-block-and-go)
   (local-set-key (kbd "C-c e") 'foxdot-execute-block)
   (local-set-key [?\C-c ?\C-e] 'foxdot-execute-block-and-go)
   (local-set-key [?\C-c ?\C-r] 'foxdot-run-region)
   (local-set-key [?\C-c ?\C-n] 'foxdot-run-block-by-lines)
-  (local-set-key [?\C-c ?\o] 'foxdot-run-block-by-lines-and-go)
+  (local-set-key [?\C-c ?\o]   'foxdot-run-block-by-lines-and-go)
   (local-set-key [?\C-c ?\C-u] 'foxdot-hush)
   (local-set-key [?\C-c ?\C-a] 'foxdot-clear-foxdot)
-  (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
+  ;;  (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
+  (local-set-key (kbd "C-c w") 'foxdot-set-sc3-layout)
+  (local-set-key (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
+  (local-set-key (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
   )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
+(defalias 'foxdot-sc3-kill-process 'sc3-kill-process )
+(defalias 'sc3-kill 'sc3-kill-process )
+(defalias 'foxdot-sc3-start-process 'sc3-start-process )
+(defalias 'sc3-start 'sc3-start-process )
+
+;;
 
 (defun foxdot-mode-menu (map)
   "FoxDot menu from MAP."
@@ -518,7 +601,11 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [menu-bar foxdot quit-foxdot]
     '("Quit FoxDot" . foxdot-kill-foxdot))
   (define-key map [menu-bar foxdot sclang-start-foxdot]
-    '("Start FoxDot" . foxdot--foxdot))
+    '("Start FoxDot" . foxdot-start-foxdot))
+  (define-key map [menu-bar foxdot quit-foxdot]
+    '("Quit SCLang" . sc3-kill-process))
+  (define-key map [menu-bar foxdot sclang-start-foxdot]
+    '("Start SCLang" . sc3-start-process))
   (define-key map [menu-bar foxdot process-separator]
     '(menu-item "--"))
   (define-key map [menu-bar foxdot run-region]
@@ -541,6 +628,10 @@ If you have not passed a buffer B, uses current buffer."
     '("Run line" . foxdot-run-line))
   (define-key map [menu-bar foxdot foxdot-separator]
     '(menu-item "--"))
+  (define-key map [menu-bar foxdot sclang-foxdot-quit]
+    '("Quit SCLang-FoxDot" . foxdot-sclang-foxdot-quit))
+  (define-key map [menu-bar foxdot sclang-foxdot-start]
+    '("Start SCLang-FoxDot" . foxdot-sclang-foxdot-start))
   )
 
 (unless foxdot-mode-map
@@ -548,6 +639,20 @@ If you have not passed a buffer B, uses current buffer."
     (foxdot-mode-keybindings map)
     (foxdot-mode-menu map)
     (setq foxdot-mode-map map)))
+
+(defconst fd-keywords
+  '("dur" "amp" "pan" "echo" "pan" "indent" "stop" "oct" "cutoff" "room" "lpf" "rate" "sus"))
+
+(defconst fd-functions
+  '("lazer" "crunch" "swell" "quin" "sinepad" "pads" "loop" "blip" "squish" "pasha" "space" "growl" "dirt" "snick" "spark" "orient" "karp" "twang" "ambi" "sawbass" "dub" "soft" "creep" "varsaw" "saw" "arpy" "viola" "gong" "prophet" "glass" "pulse" "rave" "dab" "razz" "soprano" "noise" "keys" "audioin" "scratch" "ripple" "stretch" "bass" "zap" "bug" "donk" "star" "jbass" "scatter" "fuzz" "bell" "dbass" "marimba" "feel" "klank" "play1" "charm" "sitar" "play2" "nylon" "pluck" "hh" "Clock" "play" "print" "SynthDefs" "PWhite" "PRand" "var" "linvar"))
+
+(defvar fd-font-lock-keywords
+  (list
+   `("\"\\.\\*\\?" . font-lock-string-face)
+   `(,(rx (or (and "\'\'\'" (*? anything) "\'\'\'") (and "#" (*? anything) eol))) . font-lock-comments)
+   `(,(concat "\\_<" (regexp-opt fd-keywords) "\\_>") . font-lock-keyword-face)
+   `(,(concat "\\_<" (regexp-opt fd-functions) "\\_>") . font-lock-function-name-face))
+  "Additional expressions to highlight in `foxdot-mode'.")
 
 ;;;###autoload
 (define-derived-mode
@@ -557,7 +662,9 @@ If you have not passed a buffer B, uses current buffer."
   "Major mode for interacting with an inferior FoxDot process."
   (set (make-local-variable 'paragraph-start) "\f\\|[ \t]*$")
   (set (make-local-variable 'paragraph-separate) "[ \t\f]*$")
-  (turn-on-font-lock))
+  (set (make-local-variable 'font-lock-defaults) '(fd-font-lock-keywords t))
+  (turn-on-font-lock)
+  )
 
 (provide 'foxdot-mode)
 ;;; foxdot-mode.el ends here
