@@ -17,11 +17,12 @@ Inspiration: tidal.el (from <a href="https://tidalcycles.org/index.php/Welcome">
 
 We assume that you are working in Linux.
 
-<b>(1)</b> If you have not doen it, install FoxDot python library. From a shell command line do:
+<ol>
+<li> If you have not doen it, install FoxDot python library. From a shell command line do:
 
     $ pip install FoxDot
 
-<b>(2)</b> Install Emacs FoxDot mode.
+<li> Install Emacs FoxDot mode.
 
 Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or any directory in "load-path" list. For example, from the command line, you can create a directory like "\~/.emacs.d/site-lisp/" (mkdir ~/.emacs.d/site-lisp), move to that directory (cd ~/.emacs.d/site-lisp), and clone the repository:
 
@@ -36,7 +37,7 @@ Where «(expand-file-name "site-lisp/foxdot-mode" "~/.emacs.d")» evaluates to �
 
 Evaluate those lines or restart Emacs.
 
-(3) Install the SuperCollider FoxDot quark.
+<li> Install the SuperCollider FoxDot quark.
 
 Assuming that you have installed SuperCollider, from Ecmacs do Alt-x install-fd
 
@@ -44,7 +45,7 @@ This run sclang in a Emacs buffer and, if you are in line, will install FoxDot q
 
 Youst hear a simple sound. If not, do Alt+x test-sc3 ENTER. If you don't hear it, there is a problem with SuperCollider or your audio system.
 
-(4) Start foxdot.
+<li> Start foxdot.
 
 If you hearded the sound, you can continue.
 
@@ -54,7 +55,7 @@ Wait and you will see three horizontal windows: the .foxdot file (your workspace
 
 SuperCollider is now listening for messages from FoxDot.
 
-(5) Enjoy now. Play with some codes.
+<li> Enjoy now. Play with some codes.
 
 For example, type in your workspace:
 
@@ -63,6 +64,8 @@ For example, type in your workspace:
 With the cursor over the line type Ctrl+c Ctrl+c.
 
 Do Ctrl+c Ctrl+u to stop the sounds.
+
+</ol>
 
 If you want FoxDot launch when you open "myfile.foxdot", add the following lines to ~/.emacs:
 
