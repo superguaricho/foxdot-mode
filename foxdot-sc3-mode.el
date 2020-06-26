@@ -64,16 +64,15 @@
       (let ((moving (= (point) (process-mark proc))))
         (goto-char (process-mark proc))
         (insert string)
+        ;;(if (string-match "*** Welcome to SuperCollider" string)
+        ;;    (process-send-string proc "s.boot;\n"))
         (when (string-match "Shared memory server interface initialized" string)
+          (process-send-string proc "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play\n")
+          (sit-for 1)
           (process-send-string proc "FoxDot.start\n"))
-	(when (string-match "Listening for messages from FoxDot" string)
-          (process-send-string
-	   proc
-	   "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play\n")
-          (sit-for 1))
         (set-marker (process-mark proc) (point))
         (set-window-point (get-buffer-window sc3-buffer) (point))
-        (goto-char (process-mark proc)))))
+        (if moving (goto-char (process-mark proc))))))
   )
 
 (defun sc3-create-process ()
@@ -110,7 +109,6 @@
 
 (defun fdsend-str-sc3 (string)
   "Send STRING to sclang process."
-  (interactive)
   (let ((p (get-process sc3-process)))
     (when p (process-send-string p (concat string "\n"))))
   )
@@ -127,23 +125,14 @@
   (fdsend-str-sc3 "thisProcess.recompile();")
   )
 
-(defun sc3-test-audio ()
-  "Recompile the SC3 class library."
-  (interactive)
-  (fdsend-str-sc3
-   "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play;")
-  )
-(defalias 'test-sc3 'sc3-test-audio)
-
 (defun sc3-compile-advice (orig-fun &rest args)
   "Control foxdot quark installation.
 When foxdot quark is installed, compile the SC3 class lib."
   (let ((proc (get-process sc3-process)))
     (when (string-match "FoxDot installed" (nth 1 args))
       (advice-remove (process-filter proc) #'sc3-compile-advice)
-      (sc3-recompile-classlib))
-    (unless (string-match "Shared memory server" (nth 1 args)))
-    (apply orig-fun args))
+      (sc3-recompile-classlib)))
+  (apply orig-fun args)
   )
 
 (defun sc3-install-advice (orig-fun &rest args)
@@ -154,7 +143,6 @@ When SC3 has initialized, install the foxdot quark and recompile class lib."
       (cond ((string-match "Shared memory server" (nth 1 args))
 	     (advice-remove (process-filter proc) #'sc3-install-advice)
 	     (advice-add 'sc3-insertion-filter :around #'sc3-compile-advice)
-	     
 	     (sc3-install-quark))
 	    (t (apply orig-fun args)))))
   )
@@ -172,7 +160,6 @@ When SC3 has initialized, install the foxdot quark and recompile class lib."
     (message "sclang is not in PATH or SuperCollider is not installed."))
   )
 (defalias 'install-fd 'sc3-install-fd)
-
 ;;
 
 (defconst sc3-prompt-regexp "sc3>" "Prompt for `run-sc3'.")

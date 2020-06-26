@@ -52,24 +52,27 @@
 ;;
 ;; (3) Install the SuperCollider FoxDot quark.
 ;;
-;; Assuming that you have installed SuperCollider, from Ecmacs do Alt-x install-fd
+;; Assuming that you have installed SuperCollider, from Ecacs do Alt-x install-foxdot-quark
 ;;
-;; This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark
-;; and recompile the SuperCollider class library.
+;; This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark.
 ;;
-;; Youst hear a simple sound. If not, do Alt+x test-sc3 ENTER. If you don't hear it,
-;; there is a problem with SuperCollider or your audio system.
+;; Recompile the SuperCollider class library, type: Alt+x recompile-libclass ENTER.
 ;;
-;; (4) Start foxdot.
-;; If you hearded the sound, you can continue.
+;; Start the FoxDot quark, type; Alt+x foxdot-quark-start ENTER.
 ;;
+;; Test the audio, type: Alt+x test-audio ENTER.
+;;
+;; You must hear a simple sound.  If you don't hear it, something is wrong,
+;; there is a problem with SuperCollider configuration or in your audio system.
+;;
+;; Kill sclang process: Ctrl+c k, or type Alt+x sc3-kill-process
+;;
+;; (3) Start foxdot.
 ;; Open a file with .foxdot extension.  Type Alt+x foxdot ENTER.
-;; This run sclang and FoxDot process buffers.
+;; This run sclang and FoxDot process buffers.  Wait and you will see three horizontal
+;; windows: the .foxdot file (your workspace), the  *FoxDot* and the *SCLang:SC3* buffers.
 ;;
-;; Wait and you will see three horizontal windows: the .foxdot file (your workspace),
-;; the  *FoxDot* and the *SCLang:SC3* buffers.
-;;
-;; (5) Enjoy now. Play with some codes.
+;; (4) Play with some codes.
 ;; For example, type in your workspace:
 ;;
 ;; p1 >> pluck([12], dur=0.25, echo=0.8)
@@ -456,7 +459,6 @@ If you have not passed a buffer B, uses current buffer."
 
 ;;;###autoload
 (defalias 'start-foxdot 'foxdot-start-foxdot)
-(defalias 'foxdot-start 'foxdot-start-foxdot)
 (if (featurep 'flycheck) (add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0))))
 
 ;;
@@ -587,10 +589,6 @@ If you have not passed a buffer B, uses current buffer."
   (local-set-key (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
   )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
-(defalias 'foxdot-sc3-kill-process 'sc3-kill-process )
-(defalias 'sc3-kill 'sc3-kill-process )
-(defalias 'foxdot-sc3-start-process 'sc3-start-process )
-(defalias 'sc3-start 'sc3-start-process )
 
 ;;
 
