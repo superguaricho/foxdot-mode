@@ -172,10 +172,8 @@
 
 (defvar foxdot-buffer-name "*FoxDot*")
 
-(defvar fox-dot-cli-init-string
-  "import os
-import sys
-from FoxDot import *
+(defconst fox-dot-cli-init-string
+  "from FoxDot import *
 ")
 
 (defvar foxdot-mode-map nil)
@@ -356,6 +354,15 @@ from FoxDot import *
 
 ;;;;
 
+(defun foxdot-test-audio ()
+  (interactive)
+  "Test foxdot audio."
+  (python-shell-send-string "p1 >> pluck([12], dur=1, echo=0.8)"
+			    (get-process "Python"))
+  (sit-for 2)
+  (foxdot-hush)
+  )
+
 (defun foxdot-set-foxdot-mode (&optional b)
   "If B buffer has .py or .foxdot extension, set 'foxdot-mode'.
 If you have not passed a buffer B, uses current buffer."
@@ -388,9 +395,16 @@ If you have not passed a buffer B, uses current buffer."
   (get-buffer "*Python*")
   )
 
+(defun foxdot-py-send-command ()
+  "Send input to python process."
+  (with-current-buffer (or (get-buffer "*Python*") (get-buffer "*FoxDot*"))
+    (comint-send-input))
+  )
+
 (defun foxdot-set-prompt ()
   "Set foxdot prompt."
-  (python-shell-send-string "sys.ps1 = \"FoxDot>>> \"" (get-process "Python"))
+  (python-shell-send-string "import sys\n" (get-process "Python"))
+  (python-shell-send-string "sys.ps1 = \"FoxDot>>> \"\n" (get-process "Python"))
   )
 
 (defun foxdot-error-kill-python ()
@@ -400,47 +414,63 @@ If you have not passed a buffer B, uses current buffer."
   (delete-other-windows)
   )
 
+(defun foxdot-python-process ()
+  "Get Python process."
+  (if (get-buffer "*Python*")
+      (get-buffer-process (get-buffer "*Python*")))
+  )
+
 (defun foxdot-tracing-function (orig-fun &rest args)
   "Foxdot tracing ARGS passed to ORIG-FUN function."
   (if (or (string-match "Error sending message to SuperCollider server instance" (nth 1 args))
           (string-match "Error: No connection made to SuperCollider server instancee" (nth 1 args)))
-      (let ((p (get-process "Python")))
-        (advice-remove (process-filter p) #'foxdot-tracing-function)
+      (let ((p (foxdot-python-process)))
+	(advice-remove (process-filter p) #'foxdot-tracing-function)
         (error "It seems that SuperCollider is not running: %S"
-               (replace-regexp-in-string "\n$" "" (nth 1 args))))
-    (apply orig-fun args))
+               (replace-regexp-in-string "\n$" "" (nth 1 args)))
+	(foxdot-error-kill-python)))
+  (if (string-match "Warning: Could not fetch info from SCLang server. Using defaults" (nth 1 args))
+      (message "There is a problem running SuperCollider."))
+  (apply orig-fun args)
   )
 
 (defun foxdot-init-foxdot-buffer ()
   "Initialize *FoxDot* buffer."
-  (with-current-buffer (current-buffer)
-    (when (foxdot-python-buffer)
-      (with-current-buffer (foxdot-python-buffer)
-	(pop-to-buffer (foxdot-python-buffer))
-	(python-shell-send-string fox-dot-cli-init-string (get-process "Python"))
-	(sit-for 3.0)
-	(if (save-excursion
-              (with-current-buffer (foxdot-python-buffer)
-		(goto-char (point-min))
-		(re-search-forward "Error: No connection" nil t)))
-            (kill-process (get-process "Python"))
-          (let ((p (get-process "Python")))
-            (foxdot-set-prompt)
-            (sit-for 1.0)
-            (rename-buffer foxdot-buffer-name)
-            (comint-send-input)
-            (comint-clear-buffer)
-            (advice-remove (process-filter p) #'foxdot-tracing-function)))))
-    (if (get-buffer "*FoxDot*")  (foxdot-sc3-foxdot-layout)))
+  (when (foxdot-python-buffer)
+    (with-current-buffer (foxdot-python-buffer)
+      (unless (foxdot-get-sc3-buffer)
+	(pop-to-buffer (foxdot-python-buffer)))
+      (let ((p (foxdot-python-process)))
+	(when p (advice-add (process-filter p) :around #'foxdot-tracing-function)
+	      (rename-buffer foxdot-buffer-name)
+	      (foxdot-set-prompt)
+	      (python-shell-send-string fox-dot-cli-init-string p)
+	      (sit-for 1.5)
+	      (comint-clear-buffer)		
+	      (advice-remove (process-filter p) #'foxdot-tracing-function)))))
   )
-				 
-(defun foxdot-initialize ()
-  "Set tracing, foxdot buffers and `auto-mode-alist'."
-  (advice-add (process-filter (get-process "Python")) :around #'foxdot-tracing-function)
-  (foxdot-set-foxdot-in-all-buffers)
-  (add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
+
+(defun foxdot-start-python ()
+  "Start python buffer."
+  (let ((python-shell-interpreter-args ""))
+    (when (and (not (foxdot-python-buffer)) (not (get-buffer "*FoxDot*")))
+      (run-python)
+      (when (not (foxdot-get-sc3-buffer))
+	(delete-other-windows)
+	(split-window-below)
+	(foxdot-set-window-buffer-in-frame 0 1 (get-buffer "*Python*")))
+      (if (foxdot-get-sc3-buffer)
+	  (foxdot-sc3-foxdot-layout))))
   )
-;; (advice-remove (process-filter (get-process "Python")) #'foxdot-tracing-function)
+
+(defun foxdot-do-restart ()
+  "What to do when foxdot buffer exists."
+  (when (get-buffer "*FoxDot*")
+    (kill-buffer (get-buffer "*FoxDot*"))    
+    (sit-for 0.5)
+    (foxdot-start-foxdot))
+  )
+(defalias 'foxdot-restart-foxdot 'foxdot-do-restart)
 
 ;;;###autoload
 (defun foxdot-start-foxdot ()
@@ -448,13 +478,14 @@ If you have not passed a buffer B, uses current buffer."
   (interactive)
   (with-current-buffer (current-buffer)
     (save-selected-window
-      (let ((python-shell-interpreter-args ""))
-	(if (get-buffer "*FoxDot*")
-	    (message "There is a *FoxDot* buffer.")
-	  (when (not (foxdot-python-buffer))
-	    (run-python)
-            (foxdot-initialize)
-            (foxdot-init-foxdot-buffer))))))
+      (unless (get-buffer "*FoxDot*")
+	(foxdot-start-python)
+	(if (foxdot-python-buffer) (foxdot-init-foxdot-buffer))
+	(if (foxdot-get-sc3-buffer)
+	    (foxdot-sc3-foxdot-layout)
+	  (foxdot-set-foxdot-layout))
+	(add-to-list 'auto-mode-alist '("\\.py\\([0-9]\\|[iw]\\)?$" . foxdot-mode))
+	(foxdot-set-foxdot-in-all-buffers))))
   )
 
 ;;;###autoload
@@ -505,16 +536,18 @@ If you have not passed a buffer B, uses current buffer."
   (when (string-match "Listening for messages from FoxDot" (nth 1 args))
     (advice-remove
      (process-filter (get-process "sc3:sclang")) #'foxdot-sclang-advice)
-    (foxdot-start-foxdot)
-    (foxdot-sc3-foxdot-layout))
+    (foxdot-start-foxdot))
   (apply orig-fun args)
   )
 
 (defun foxdot-sclang-foxdot-start ()
   "Start SCLang and FoxDot."
   (interactive)
-  (when (sc3-start-process)
-    (advice-add (process-filter (get-process "sc3:sclang")) :around #'foxdot-sclang-advice))
+  (with-current-buffer (current-buffer)
+    (save-selected-window
+      (when (sc3-start-process)
+	(if (get-process "sc3:sclang")
+	    (advice-add (process-filter (get-process "sc3:sclang")) :around #'foxdot-sclang-advice)))))
   )
 (defalias 'foxdot 'foxdot-sclang-foxdot-start)
 
