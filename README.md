@@ -51,7 +51,7 @@ If you hearded the sound, you can continue.
 
 Open a file with .foxdot extension.  Type Alt+x foxdot ENTER. This run sclang and FoxDot process buffers.
 
-Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  *FoxDot* and the *SCLang:SC3* buffers.
+Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  \*FoxDot\* and the \*SCLang:SC3\* buffers.
 
 SuperCollider is now listening for messages from FoxDot.
 
@@ -82,20 +82,14 @@ I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added 
     (add-to-list 'load-path (expand-file-name "site-lisp/foxdot-mode" user-emacs-directory))
     (require 'foxdot-mode)
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
-    (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
+    (add-hook 'foxdot-mode-hook 'foxdot\)
 
 Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* process and I can write and evaluate my livecoding lines, seting the cursor over the line that I want execute and using the folowing keys:
 
-    C-c C-c (foxdot-run-line)
-    C-c  C-g (foxdot-run-line-and-go). This command send a line to the interpreter and
-                                            advance the cursor to he next non blank line.
+    C-c C-c (foxdot-run-line) Send a line to the interpreter
+    C-c  C-g (foxdot-run-line-and-go). Send a line to the interpreter and advance the cursor to the next non blank line.
     C-c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
-    C-c C-b (foxdot-run-block-and-go). Send the block where is the cursor to the interpreter and
-    advance the cursor to he next non blank line.
-    C-c e (foxdot-execute-block). Send the paragraphe or block where is the cursor with echo to the interpreter.
-    C-c C-e (foxdot-execute-block-and-go). Send the paragraphe or block where is the cursor with echo to the interpreter
-    and go to the next non blank line.
-    C-c C-r (foxdot-run-region). Send the selected region to the interpreter.
+    C-c C-b (foxdot-run-block-and-go). Send the current block to the interpreter and advance to the next non blank line.
     C-c n (foxdot-run-block-by-lines).  Send a block line by line.
     C-c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
     C-c C-a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
