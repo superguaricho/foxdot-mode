@@ -20,10 +20,12 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; Commentary:
+;;; Commentary:
 ;; SCLang Mode for FoxDot. It would come with foxdot-mode.
 
 ;;; Code:
+
+(require 'comint)
 
 (defvar sc3-cli-file-path (executable-find "sclang")
   "Path to the program used by `run-cli'.")
@@ -49,35 +51,119 @@
     (when p (process-send-string p (concat string "\n"))))
   )
 
-(defun sc3-test-audio ()
+(defun sc3-shell-newline ()
+  "Send new line to *FoxDot* buffer."
   (interactive)
-  (process-send-string (get-process sc3-process)
-                       "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play\n")
+  (when (get-buffer sc3-buffer)
+    (with-current-buffer (get-buffer sc3-buffer)
+      (sc3-send-string "")))
+  )
+
+(defun sc3-next-non-blank-line ()
+  "Move to the nex non-blank line."
+  (interactive)
+  (goto-char (line-end-position))
+  (forward-line)
+  (while (and (eolp) (bolp) (not (eobp))) (forward-line))
+  )
+
+(declare-function python-shell-send-string "python")
+(defun sc3-run-line ()
+  "Send the current line to the interpreter."
+  (interactive)
+  (let* ((start (line-beginning-position))
+         (end (line-end-position))
+         (b (current-buffer))
+         (s (buffer-substring start end)))
+    (pulse-momentary-highlight-one-line (point))
+    (sit-for 0.25)
+    (sc3-send-string s ))
+  )
+
+(defun sc3-run-line-and-go ()
+  "Send the current line to the interpreter."
+  (interactive)
+  (sc3-run-line)
+  (sc3-next-non-blank-line)
+  )
+
+;;
+
+(defun sc3-run-region ()
+  "Send the current block to the interpreter."
+  (interactive)
+  (if (use-region-p)
+      (let* ((s (buffer-substring-no-properties (region-beginning)
+                                                (region-end))))
+        (sc3-send-string (replace-regexp-in-string "\n" " " s))))
+  (pulse-momentary-highlight-region (mark) (point))
+  (deactivate-mark t)
+  )
+
+(defun sc3-run-block ()
+  "Send the current block to the interpreter."
+  (interactive)
+  (save-excursion (mark-paragraph -1) (sc3-run-region))
+  )
+
+(defun sc3-run-block-and-go ()
+  "Send the current block to the interpreter."
+  (interactive)
+  (sc3-run-block)
+  (mark-paragraph -1)
+  (deactivate-mark t)
+  (sc3-next-non-blank-line)
+  )
+
+;;
+
+(defun sc3-start-fdquark ()
+  "Install fixdot quark in SuperCollider."
+  (interactive)
+  (sc3-send-string "FoxDot.start;")
+  )
+
+(defun sc3-test-audio ()
+  "Recompile the SC3 class library."
+  (interactive)
+  (sc3-send-string
+   "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play;")
+  )
+(defalias 'test-sc3 'sc3-test-audio)
+
+;;
+(declare-function foxdot-start-foxdot "foxdot-mode")
+(defun sc3-when-foxdot-buffer ()
+  "What to do if *FoxDot* buffer exists."
+  (if (get-buffer "*FoxDot*") (foxdot-start-foxdot))
+  )
+
+(defun sc3-when-listening-foxdot ()
+  "What to do when listening foxdot."
+  (sc3-test-audio)
   (sit-for 1)
+  (sc3-when-foxdot-buffer)
   )
 
 (defun sc3-insertion-filter (proc string)
   "SC3 PROC process STRING filter."
   (when (buffer-live-p (process-buffer proc))
     (display-buffer (process-buffer proc))
+    (when (string-match "Shared memory server interface initialized" string)
+      (sc3-start-fdquark))
+    (when (string-match "Listening for messages from FoxDot" string)
+      (sc3-when-listening-foxdot))
     (with-current-buffer (process-buffer proc)
       (let ((moving (= (point) (process-mark proc))))
-        (goto-char (process-mark proc))
-        (insert string)
-        ;;(if (string-match "*** Welcome to SuperCollider" string)
-        ;;    (process-send-string proc "s.boot;\n"))
-        (when (string-match "Shared memory server interface initialized" string)
-          (process-send-string proc "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play\n")
-          (sit-for 1)
-          (process-send-string proc "FoxDot.start\n"))
-        (set-marker (process-mark proc) (point))
-        (set-window-point (get-buffer-window sc3-buffer) (point))
-        (if moving (goto-char (process-mark proc))))))
+	(goto-char (process-mark proc))
+	(insert string)
+	(set-marker (process-mark proc) (point))
+	(set-window-point (get-buffer-window sc3-buffer) (point))
+	(goto-char (process-mark proc)))))
   )
 
 (defun sc3-create-process ()
   "Create a SC3:SCLang process."
-  (interactive)
   (make-process :name sc3-process
                 :buffer sc3-buffer
                 :command (list sc3-cli-file-path)
@@ -86,17 +172,26 @@
                 :connection-type 'pipe)
   )
 
+(declare-function foxdot-set-sc3-layout "foxdot-mode")
+(declare-function foxdot-set-foxdot-layout "foxdot-mode")
+(declare-function foxdot-sc3-foxdot-layout "foxdot-mode")
+(declare-function foxdot-do-restart "foxdot-mode")
+
 (defun sc3-start-process ()
   "Create a SC3:SCLang process."
   (interactive)
-  (if (executable-find "sclang")
-      (if (and (not (get-process sc3-process))
-	       (not (get-buffer "*Python*")))
-	  (with-current-buffer (process-buffer (sc3-create-process))
-	    (sc3-mode)
-	    (get-process sc3-process))
-	(message "A sclang process is running."))
-    (message "sclang is not in PATH or SuperCollider is not installed."))
+  (with-current-buffer (current-buffer)
+    (save-selected-window
+      (if (executable-find "sclang")
+	  (if (not (get-process sc3-process))
+	      (with-current-buffer (process-buffer (sc3-create-process)) (sc3-mode))
+	    (message "A sclang process is running.  Kill it before restart it."))
+	(message "sclang is not in PATH or SuperCollider is not installed."))
+      (if (get-buffer sc3-buffer) (foxdot-set-sc3-layout))
+      (when (and (get-buffer sc3-buffer) (get-buffer "*FoxDot*"))
+	(foxdot-sc3-foxdot-layout)
+	(foxdot-do-restart))
+      (get-process sc3-process)))
   )
 
 (defun sc3-kill-process ()
@@ -107,37 +202,34 @@
 
 ;;; sc3-install-fd-quark
 
-(defun fdsend-str-sc3 (string)
-  "Send STRING to sclang process."
-  (let ((p (get-process sc3-process)))
-    (when p (process-send-string p (concat string "\n"))))
-  )
-
 (defun sc3-install-quark ()
   "Install fixdot quark in SuperCollider."
   (interactive)
-  (fdsend-str-sc3 "Quarks.install(\"FoxDot\");")
+  (sc3-send-string "Quarks.install(\"FoxDot\");")
   )
 
 (defun sc3-recompile-classlib ()
   "Recompile the SC3 class library."
   (interactive)
-  (fdsend-str-sc3 "thisProcess.recompile();")
+  (sc3-send-string "thisProcess.recompile();")
   )
 
 (defun sc3-compile-advice (orig-fun &rest args)
   "Control foxdot quark installation.
-When foxdot quark is installed, compile the SC3 class lib."
+When foxdot quark is installed, compile the SC3 class lib.
+ORIG-FUN is the advised function and ARGS its arguments."
   (let ((proc (get-process sc3-process)))
     (when (string-match "FoxDot installed" (nth 1 args))
       (advice-remove (process-filter proc) #'sc3-compile-advice)
-      (sc3-recompile-classlib)))
-  (apply orig-fun args)
+      (sc3-recompile-classlib))
+    (unless (string-match "Shared memory server" (nth 1 args))
+      (apply orig-fun args)))
   )
 
 (defun sc3-install-advice (orig-fun &rest args)
   "Control foxdot quark installation.
-When SC3 has initialized, install the foxdot quark and recompile class lib."
+When SC3 has initialized, install the foxdot quark and recompile class lib.
+ORIG-FUN is the adviced function and ARGS its arguments/."
   (let ((proc (get-process sc3-process)))
     (when proc
       (cond ((string-match "Shared memory server" (nth 1 args))
@@ -148,7 +240,7 @@ When SC3 has initialized, install the foxdot quark and recompile class lib."
   )
 
 ;;;###autoload
-(defun sc3-install-fd ()
+(defun sc3-install-foxdog-quark ()
   "Install foxdot quark."
   (interactive)
   (if (executable-find "sclang")
@@ -159,16 +251,18 @@ When SC3 has initialized, install the foxdot quark and recompile class lib."
 	       (advice-add 'sc3-insertion-filter :around #'sc3-compile-advice)))
     (message "sclang is not in PATH or SuperCollider is not installed."))
   )
-(defalias 'install-fd 'sc3-install-fd)
+
+(defalias 'install-fd 'sc3-install-foxdog-quark)
+
 ;;
 
 (defconst sc3-prompt-regexp "sc3>" "Prompt for `run-sc3'.")
 
 (defconst sc3-keywords
-  '("play" "load" "plot" "var" "Synth" "late"))
+  '("play" "load" "plot" "var" "late" "release" "doneAction" "ar" "kr"))
 
 (defconst sc3-functions
-  '("sc3>" "SinOsc" "Line" "Env" "sine" "circle" "EnvGen"))
+  '("sc3>" "Synth" "SynthDef" "SinOsc" "Line" "Env" "CombN" "PMOsc" "MouseY"  "MouseX" "sine" "circle" "EnvGen"))
 
 (defvar sc3-font-lock-keywords
   (list
@@ -178,20 +272,54 @@ When SC3 has initialized, install the foxdot quark and recompile class lib."
    `(,(concat "\\_<" (regexp-opt sc3-functions) "\\_>") . font-lock-function-name-face))
   "Additional expressions to highlight in `sc3-mode'.")
 
+;;
+
 (defun sc3-mode-keybindings (map)
   "FoxDot keybindings in MAP."
-  (define-key map (kbd "C-c C-s") 'sc3-start-process)
-  (define-key map (kbd "C-c C-k") 'sc3-kill-process)
+  (define-key map (kbd "C-s C-s") 'sc3-start-process)
+  (define-key map (kbd "C-s C-k") 'sc3-kill-process)
+
+  (define-key map (kbd "C-s C-c") 'sc3-run-line)
+  (define-key map (kbd "C-s C-g") 'sc3-run-line-and-go)
+  (define-key map (kbd "C-s b") 'sc3-run-block)
+  (define-key map (kbd "C-s C-b") 'sc3-run-block-and-go)
   )
+
+(defun turn-on-foxdot-keybindings ()
+  "Foxdot keybindings in the local map."
+  (interactive)
+  (local-set-key (kbd "C-s C-s") 'sc3-start-process)
+  (local-set-key (kbd "C-s C-k") 'sc3-kill-process)
+
+  (local-set-key (kbd "C-s C-c") 'sc3-run-line)
+  (local-set-key (kbd "C-s C-g") 'sc3-run-line-and-go)
+  (local-set-key (kbd "C-s b") 'sc3-run-block)
+  (local-set-key (kbd "C-s C-b") 'sc3-run-block-and-go)
+  )
+(add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
+
 
 (defun sc3-mode-menu (map)
   "FoxDot menu from MAP."
   (define-key map [menu-bar sc3-mode]
     (cons "sc3-mode" (make-sparse-keymap "SCLang:sc3-mode")))
-  (define-key map [menu-bar sc3-mode quit-foxdot]
-    '("kill sclang" . sc3-kill-process))
-  (define-key map [menu-bar sc3-mode sclang-start-foxdot]
-    '("Start sclang" . sc3-start-sclang))
+  
+  (define-key map [menu-bar sc3-mode kill-sclang]
+    '("Kill sclang" . sc3-kill-process))
+  (define-key map [menu-bar sc3-mode start-sclang]
+    '("Start sclang" . sc3-start-process))
+  
+  (define-key map [menu-bar sc3-mode separator]
+    '(menu-item "--"))
+  
+  (define-key map [menu-bar sc3-mode run-block-and-go]
+    '("Run block and jump" . sc3-run-block-and-go))
+  (define-key map [menu-bar sc3-mode run-block]
+    '("Run block" . sc3-run-block))
+  (define-key map [menu-bar sc3-mode run-line-and-go]
+    '("Run line and jump" . sc3-run-line-and-go))
+  (define-key map [menu-bar sc3-mode run-line]
+    '("Run line" . sc3-run-line))
   )
 
 (unless sc3-mode-map
@@ -207,6 +335,8 @@ When SC3 has initialized, install the foxdot quark and recompile class lib."
   (set (make-local-variable 'paragraph-start) sc3-prompt-regexp)
   (turn-on-font-lock)
   )
+
+(add-to-list 'auto-mode-alist '("\\.sc3\\'" . sc3-mode))
 
 (provide 'foxdot-sc3-mode)
 ;;; foxdot-sc3-mode ends here
