@@ -86,43 +86,43 @@ I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added 
 
 Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* process and I can write and evaluate my livecoding lines, seting the cursor over the line that I want execute and using the folowing keys:
 
-    Ctrl+c Ctrl+c (foxdot-run-line)
-    Ctrl+c Ctrl+g (foxdot-run-line-and-go). This command send a line to the interpreter and
+    C-c C-c (foxdot-run-line)
+    C-c  C-g (foxdot-run-line-and-go). This command send a line to the interpreter and
                                             advance the cursor to he next non blank line.
-    Ctrl+c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
-    Ctrl+c Ctrl+b (foxdot-run-block-and-go). Send the block where is the cursor to the interpreter and
+    C-c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
+    C-c C-b (foxdot-run-block-and-go). Send the block where is the cursor to the interpreter and
     advance the cursor to he next non blank line.
-    Ctrl+c e (foxdot-execute-block). Send the paragraphe or block where is the cursor with echo to the interpreter.
-    Ctrl+c Ctrl+e (foxdot-execute-block-and-go). Send the paragraphe or block where is the cursor with echo to the interpreter
+    C-c e (foxdot-execute-block). Send the paragraphe or block where is the cursor with echo to the interpreter.
+    C-c C-e (foxdot-execute-block-and-go). Send the paragraphe or block where is the cursor with echo to the interpreter
     and go to the next non blank line.
-    Ctrl+c Ctrl+r (foxdot-run-region). Send the selected region to the interpreter.
-    Ctrl+c n (foxdot-run-block-by-lines).  Send a block line by line.
-    Ctrl+c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
-    Ctrl+c Ctrl+a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
-    Ctrl+c Ctrl+u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
+    C-c C-r (foxdot-run-region). Send the selected region to the interpreter.
+    C-c n (foxdot-run-block-by-lines).  Send a block line by line.
+    C-c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
+    C-c C-a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
+    C-c C-u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
 
 You can start sclang and foxdot interpreters with:
 
-    Ctrl+c Ctrl+s (foxdot-sclang-foxdot-start)
+    C-c C-s (foxdot-sclang-foxdot-start)
 
 To quit sclang and foxdot: Alt+x kill-foxdot ENTER, or:
  
-    Ctrl+c Ctrl+k (foxdot-sclang-foxdot-quit)
+    C-c C-k (foxdot-sclang-foxdot-quit)
 
 Other intesting keys:
 
-    Ctrl+c s (foxdot-sclang-start). Run sclang process only.
-    Ctrl+c k (foxdot-sclang-kill).  Kill sclang process only.
-    Ctrl+c f (foxdot-start-foxdot). Run python foxdot only.
-    Ctrl+c q (foxdot-kill-foxdot).  Kill python fpcdpt only.
+    C-c s (foxdot-sclang-start). Run sclang process only.
+    C-c k (foxdot-sclang-kill).  Kill sclang process only.
+    C-c f (foxdot-start-foxdot). Run python foxdot only.
+    C-c q (foxdot-kill-foxdot).  Kill python fpcdpt only.
 
 Layouts:
 
-Foxdot-mode can show three layouts:
+foxdot-mode can show three layouts:
 
-    Ctrl+c w (foxdot-set-sc3-layout). Three vertical windows: workspace, foxdot and sclang. 
-    Ctrl+c Ctrl+w (foxdot-set-foxdot-layout). Two windows: workspace and foxdot.
-    Ctrl+c 3 (foxdot-sc3-foxdot-layout). Two windows: workspace and sclang.
+    C-c w (foxdot-set-sc3-layout). Three vertical windows: workspace, foxdot and sclang. 
+    C-c C-w (foxdot-set-foxdot-layout). Two windows: workspace and foxdot.
+    C-c 3 (foxdot-sc3-foxdot-layout). Two windows: workspace and sclang.
 
 <h2>Todo</h2>
 
