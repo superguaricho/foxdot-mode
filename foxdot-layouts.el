@@ -24,6 +24,8 @@
 ;;
 ;; Layout windows handler for FoxDot.
 
+;;; Code:
+
 (require 'windmove)
 
 (declare-function windmove-find-other-window "windmove")
@@ -72,6 +74,13 @@
     (when b (set-window-buffer (selected-window) b)))
   )
 
+(defun foxdot-bring-python-buffer ()
+  "Place pytohn buffer in selected window."
+  (interactive)
+  (let ((b (get-buffer "*Python*")))
+    (when b (set-window-buffer (selected-window) b)))
+  )
+
 (defun foxdot-get-buffer-window (buffer-name)
   "Get the window where is BUFFER-NAME buffer."
   (let ((b (get-buffer buffer-name)))
@@ -87,8 +96,9 @@
 	  (foxdot-sc3-foxdot-layout)
 	  (foxdot-set-window-buffer-in-frame 0 1 (foxdot-get-foxdot-buffer))
 	  (other-window 2)
-	  (switch-to-buffer (foxdot-get-sc3-buffer))
-    (message "*FoxDot* buffer or *SCLang:Postbuffer* does not exist."))))
+	  (switch-to-buffer (foxdot-get-sc3-buffer)))))
+  (if (foxdot-get-foxdot-buffer) (message "*FoxDot* buffer does not exist."))
+  (if (foxdot-get-sc3-buffer) (message "*SCLang:Postbuffer* does not exist when place sc3 process buffer."))
   )
     
 (defun foxdot-hide-buffer (buffer)
@@ -102,13 +112,13 @@
 (defun foxdot-hide-sc3-buffer ()
   "Hide *SC3:SCLang*."
   (interactive)
-  (foxdot-hide-sc3-buffer "*SC3:SCLang*")
+  (foxdot-hide-buffer "*SC3:SCLang*")
   )
 
 (defun foxdot-hide-foxdot-buffer ()
   "Hide *FoxDot*."
   (interactive)
-  (foxdot-hide-sc3-buffer "*FoxDot*")
+  (foxdot-hide-buffer "*FoxDot*")
   )
 
 (defun foxdot-delete-split-window ()
@@ -135,11 +145,13 @@
 (defun foxdot-set-foxdot-layout ()
   "Set SC3 layout."
   (interactive)
-  (save-selected-window (foxdot-set-two-win-layout "*FoxDot*"))
+  (let ((b (or (get-buffer "*FoxDot*") (get-buffer "*Python*"))))
+    (unless b (save-selected-window (foxdot-set-two-win-layout b))))
   )
 
 (defun foxdot-sc3-foxdot-layout (&optional b)
-  "Bring back 3x3 window configuration with my favorite buffers."
+  "Bring back 3x3 window configuration with my favorite buffers.
+B is a buffer that you want in top left most window."
   (interactive)
   (let ((b (or b (current-buffer))))
     (if (and (foxdot-get-foxdot-buffer) (foxdot-get-sc3-buffer))
@@ -147,12 +159,12 @@
 	  (delete-other-windows)
 	  (split-window-below)
 	  (other-window 1)
-	  (foxdot-bring-foxdot-buffer)
+	  (foxdot-bring-foxdot-buffer) ;;  (or (get-buffer "*FoxDot*") (get-buffer "*Python*")))
 	  (split-window-below)
 	  (other-window 1)
-	  (foxdot-bring-sc3-buffer))
-      (message "*FoxDot* buffer or *SC3:SCLang* does not exist."))
-    (foxdot-set-window-buffer-in-frame 0 0 b))
+	  (foxdot-bring-sc3-buffer)
+	  (foxdot-set-window-buffer-in-frame 0 0 b))
+      (message "*FoxDot* buffer or *SC3:SCLang* does not exist.")))
   )
 
 (defun foxdot-mode-layout-keybindings ()
