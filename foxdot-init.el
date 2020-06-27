@@ -1,6 +1,21 @@
-;;; foxdot-init.el --- FoxDot initialization file for Emacs.
+;;; foxdot-init.el --- Initialization Emacs file for FoxDot.
 
-;;; Commentary:  Intitial vanilla foxdot-mode configuration
+;;; Commentary:  Intitial vanilla foxdot-mode configuration.
+;;; Useful to start a vanilla FoxDot Emacs section.
+;;; Create a bash script with:
+;;;
+;;;    #!/bin/sh
+;;;    emacs -Q -l ~/path/to/foxdot-init.el $@
+;;;
+;;; Name it foxmacs. Put it in some of your PATH folders  I put it in: ~/.local/bin .
+;;; Changes its permissions: chmod a+x  ~/.local/bin/foxmacs .
+;;; Now, when you want start FoxDot in Emacs, simply do from the command line:
+;;;
+;;; $ foxmacs ENTER
+;;;
+;;; You can directly open files:
+;;;
+;;; $ foxmacs myfile.foxdot
 
 ;;; Code:
 
