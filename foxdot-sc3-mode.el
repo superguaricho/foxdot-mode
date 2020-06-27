@@ -28,16 +28,19 @@
 (require 'comint)
 
 (defvar sc3-cli-file-path (executable-find "sclang")
-  "Path to the program used by `run-cli'.")
+  "Path to the sclang program.")
 
 (defvar sc3-cli-arguments '()
-  "Commandline arguments to pass to `cli-cli'.")
+  "Commandline arguments to pass to sclang.")
 
-(defvar sc3-mode-map
+(defvar sc3-mode-map nil
+  "Mode map for `sc3-mode'.")
+
+(defvar sc3-proc-mode-map
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
     (define-key map "\t" 'completion-at-point)
     map)
-  "Basic mode map for `run-cli'.")
+  "Basic mode map for sclang process.")
 
 (defvar sc3-process "sc3:sclang" "SC3 process name.")
 
@@ -184,7 +187,7 @@
     (save-selected-window
       (if (executable-find "sclang")
 	  (if (not (get-process sc3-process))
-	      (with-current-buffer (process-buffer (sc3-create-process)) (sc3-mode))
+	      (with-current-buffer (process-buffer (sc3-create-process)) (sc3-proc-mode))
 	    (message "A sclang process is running.  Kill it before restart it."))
 	(message "sclang is not in PATH or SuperCollider is not installed."))
       (if (get-buffer sc3-buffer) (foxdot-set-sc3-layout))
@@ -256,7 +259,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 
 ;;
 
-(defconst sc3-prompt-regexp "sc3>" "Prompt for `run-sc3'.")
+(defconst sc3-prompt-regexp "sc3>" "Prompt for sclang process buffer.")
 
 (defconst sc3-keywords
   '("play" "load" "plot" "var" "late" "release" "doneAction" "ar" "kr"))
@@ -302,11 +305,11 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 (defun sc3-mode-menu (map)
   "FoxDot menu from MAP."
   (define-key map [menu-bar sc3-mode]
-    (cons "sc3-mode" (make-sparse-keymap "SCLang:sc3-mode")))
+    (cons "SC3-FoxDot" (make-sparse-keymap "SC3-FoxDot")))
   
-  (define-key map [menu-bar sc3-mode kill-sclang]
+  (define-key map [menu-bar sc3-mode kill-process]
     '("Kill sclang" . sc3-kill-process))
-  (define-key map [menu-bar sc3-mode start-sclang]
+  (define-key map [menu-bar sc3-mode start-process]
     '("Start sclang" . sc3-start-process))
   
   (define-key map [menu-bar sc3-mode separator]
@@ -323,14 +326,34 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   )
 
 (unless sc3-mode-map
-  (let ((map (make-sparse-keymap "sc3-mode")))
+  (let ((map (make-sparse-keymap "SC3-FoxDot")))
     (sc3-mode-keybindings map)
     (sc3-mode-menu map)
     (setq sc3-mode-map map)))
 
-(define-derived-mode sc3-mode prog-mode "sc3-mode"
+(defun sc3-reset-mode ()
+  "Reset `sc3-mode' in current buffer."
+  (interactive)
+  (with-current-buffer (current-buffer)
+    ( turn-on-foxdot-keybindings)
+    (let ((map (make-sparse-keymap "SC3-FoxDot")))
+      (sc3-mode-keybindings map)
+      (sc3-mode-menu map)
+      (setq sc3-mode-map map)))
+  (sc3-mode)
+  )
+
+(define-derived-mode sc3-mode prog-mode "SC3 FoxDot"
   "Major mode for interacting with an scalng process.
 \\<sc3-mode-map>"
+  (set (make-local-variable 'font-lock-defaults) '(sc3-font-lock-keywords t))
+  (set (make-local-variable 'paragraph-start) sc3-prompt-regexp)
+  (turn-on-font-lock)
+  )
+
+(define-derived-mode sc3-proc-mode prog-mode "SC3 SCLang"
+  "Major mode for interacting with an scalng process.
+\\<sc3-proc-mode-map>"
   (set (make-local-variable 'font-lock-defaults) '(sc3-font-lock-keywords t))
   (set (make-local-variable 'paragraph-start) sc3-prompt-regexp)
   (turn-on-font-lock)
