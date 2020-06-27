@@ -87,20 +87,6 @@
     (if b (get-buffer-window b t) (foxdot-sc3-foxdot-layout)))
   )
 
-(defun foxdot-place-sc3-buffer ()
-  "Place sc3 bufer at right and bottom in frame."
-  (if (and (foxdot-get-foxdot-buffer) (foxdot-get-sc3-buffer))
-      (save-selected-window
-	(with-current-buffer (current-buffer)
-	  (delete-other-windows)
-	  (foxdot-sc3-foxdot-layout)
-	  (foxdot-set-window-buffer-in-frame 0 1 (foxdot-get-foxdot-buffer))
-	  (other-window 2)
-	  (switch-to-buffer (foxdot-get-sc3-buffer)))))
-  (if (foxdot-get-foxdot-buffer) (message "*FoxDot* buffer does not exist."))
-  (if (foxdot-get-sc3-buffer) (message "*SCLang:Postbuffer* does not exist when place sc3 process buffer."))
-  )
-    
 (defun foxdot-hide-buffer (buffer)
   "Hide BUFFER."
   (let ((b (get-buffer buffer)))
@@ -143,7 +129,7 @@
   )
 
 (defun foxdot-set-foxdot-layout ()
-  "Set SC3 layout."
+  "Set foxdot layout."
   (interactive)
   (let ((b (or (get-buffer "*FoxDot*") (get-buffer "*Python*"))))
     (if b (save-selected-window (foxdot-set-two-win-layout b))))
@@ -163,17 +149,17 @@ B is a buffer that you want in top left most window."
 	  (split-window-below)
 	  (other-window 1)
 	  (foxdot-bring-sc3-buffer)
-	  (foxdot-set-window-buffer-in-frame 0 0 b))
-      (message "*FoxDot* buffer or *SC3:SCLang* does not exist.")))
+	  (foxdot-set-window-buffer-in-frame 0 0 b))))
   )
 
 (defun foxdot-mode-layout-keybindings ()
   "FoxDot keybindings in MAP."
-  (local-set-key (kbd "C-c w") 'foxdot-set-sc3-layout)
-  (local-set-key (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
   (local-set-key (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
+  (local-set-key (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
+  (local-set-key (kbd "C-c w") 'foxdot-set-sc3-layout)
   )
-(add-hook 'sclang-mode-hook 'foxdot-mode-layout-keybindings)
+(add-hook 'sc3-mode-hook 'foxdot-mode-layout-keybindings)
+(add-hook 'foxdot-mode-hook 'foxdot-mode-layout-keybindings)
 
 (provide 'foxdot-layouts)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
