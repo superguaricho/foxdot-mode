@@ -137,5 +137,8 @@
 (global-linum-mode)
 (setq linum-format "%4d \u2502")
 
+;; run foxdot at start
+(foxdot)
+
 (provide 'foxdot-init.el)
 ;;; foxdot-init.el ends here
