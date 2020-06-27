@@ -590,9 +590,6 @@ If you have not passed a buffer B, uses current buffer."
   (define-key map [?\C-c ?\C-u] 'foxdot-hush)
   (define-key map [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   ;;  (define-key map [?\C-c ?\l] 'foxdot-load-buffer)
-  (define-key map (kbd "C-c w") 'foxdot-set-sc3-layout)
-  (define-key map (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
-  (define-key map (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
   )
 
 (defun turn-on-foxdot-keybindings ()
@@ -617,11 +614,19 @@ If you have not passed a buffer B, uses current buffer."
   (local-set-key [?\C-c ?\C-u] 'foxdot-hush)
   (local-set-key [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   ;;  (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
-  (local-set-key (kbd "C-c w") 'foxdot-set-sc3-layout)
-  (local-set-key (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
-  (local-set-key (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
+  )
+
+(defun turn-on-fd-keys ()
+  "Used to turn on some key bindings in not foxdot modes."
+  (local-set-key (kbd "C-c C-s") 'foxdot-sclang-foxdot-start)
+  (local-set-key (kbd "C-c C-k") 'foxdot-sclang-foxdot-quit)
+  (local-set-key (kbd "C-c s") 'foxdot-sc3-start-process)
+  (local-set-key (kbd "C-c k") 'foxdot-sc3-kill-process)
+  (local-set-key (kbd "C-c f") 'foxdot-start-foxdot)
+  (local-set-key (kbd "C-c q") 'foxdot-kill-foxdot)
   )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
+(add-hook 'sc3-mode-hook 'turn-on-fd-keys)
 
 (defun foxdot-set-sc3-keybindings ()
   "To turn on sc3 key bindings in foxdot-mode buffers."
