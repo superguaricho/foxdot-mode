@@ -7,8 +7,8 @@
 ;;;    #!/bin/sh
 ;;;    emacs -Q -l ~/path/to/foxdot-init.el $@
 ;;;
-;;; Name it foxmacs. Put it in some of your PATH folders  I put it in: ~/.local/bin .
-;;; Changes its permissions: chmod a+x  ~/.local/bin/foxmacs .
+;;; Name it foxmacs. Put it in one of your PATH folders.  I put it in: ~/.local/bin .
+;;; Change its permissions: chmod a+x  ~/.local/.bin/foxmacs .
 ;;; Now, when you want start FoxDot in Emacs, simply do from the command line:
 ;;;
 ;;; $ foxmacs ENTER
