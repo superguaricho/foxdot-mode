@@ -285,7 +285,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   (define-key map (kbd "C-z C-b") 'sc3-run-block-and-go)
   )
 
-(defun turn-on-foxdot-keybindings ()
+(defun sc3-turn-on-keybindings ()
   "Foxdot keybindings in the local map."
   (interactive)
   (local-set-key (kbd "C-z C-s") 'sc3-start-process)
@@ -296,7 +296,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   (local-set-key (kbd "C-z b") 'sc3-run-block)
   (local-set-key (kbd "C-z C-b") 'sc3-run-block-and-go)
   )
-(add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
+(add-hook 'foxdot-mode-hook 'sc3-turn-on-keybindings)
 
 
 (defun sc3-mode-menu (map)
