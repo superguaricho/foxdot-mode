@@ -623,6 +623,24 @@ If you have not passed a buffer B, uses current buffer."
   )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
 
+(defun foxdot-set-sc3-keybindings ()
+  "To turn on sc3 key bindings in foxdot-mode buffers."
+  (local-set-key (kbd "C-z C-s") 'sc3-start-process)
+  (local-set-key (kbd "C-z C-k") 'sc3-kill-process)
+  )
+(add-hook 'foxdot-mode-hook 'foxdot-set-sc3-keybindings)
+
+(defun foxdot-set-keybindings ()
+  "To turn on foxdot key bindings in other modes buffers."
+  (local-set-key (kbd "C-c C-s") 'foxdot-sclang-foxdot-start)
+  (local-set-key (kbd "C-c C-k") 'foxdot-sclang-foxdot-quit)
+  (local-set-key (kbd "C-c s") 'foxdot-sc3-start-process)
+  (local-set-key (kbd "C-c k") 'foxdot-sc3-kill-process)
+  (local-set-key (kbd "C-c f") 'foxdot-start-foxdot)
+  (local-set-key (kbd "C-c q") 'foxdot-kill-foxdot)
+  )
+(add-hook 'sc3-mode-hook 'foxdot-set-keybindings)
+
 ;;
 
 (defun foxdot-mode-menu (map)
