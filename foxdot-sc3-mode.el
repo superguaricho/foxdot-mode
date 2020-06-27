@@ -276,25 +276,25 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 
 (defun sc3-mode-keybindings (map)
   "FoxDot keybindings in MAP."
-  (define-key map (kbd "C-s C-s") 'sc3-start-process)
-  (define-key map (kbd "C-s C-k") 'sc3-kill-process)
+  (define-key map (kbd "C-z C-s") 'sc3-start-process)
+  (define-key map (kbd "C-z C-k") 'sc3-kill-process)
 
-  (define-key map (kbd "C-s C-c") 'sc3-run-line)
-  (define-key map (kbd "C-s C-g") 'sc3-run-line-and-go)
-  (define-key map (kbd "C-s b") 'sc3-run-block)
-  (define-key map (kbd "C-s C-b") 'sc3-run-block-and-go)
+  (define-key map (kbd "C-z C-c") 'sc3-run-line)
+  (define-key map (kbd "C-z C-g") 'sc3-run-line-and-go)
+  (define-key map (kbd "C-z b") 'sc3-run-block)
+  (define-key map (kbd "C-z C-b") 'sc3-run-block-and-go)
   )
 
 (defun turn-on-foxdot-keybindings ()
   "Foxdot keybindings in the local map."
   (interactive)
-  (local-set-key (kbd "C-s C-s") 'sc3-start-process)
-  (local-set-key (kbd "C-s C-k") 'sc3-kill-process)
+  (local-set-key (kbd "C-z C-s") 'sc3-start-process)
+  (local-set-key (kbd "C-z C-k") 'sc3-kill-process)
 
-  (local-set-key (kbd "C-s C-c") 'sc3-run-line)
-  (local-set-key (kbd "C-s C-g") 'sc3-run-line-and-go)
-  (local-set-key (kbd "C-s b") 'sc3-run-block)
-  (local-set-key (kbd "C-s C-b") 'sc3-run-block-and-go)
+  (local-set-key (kbd "C-z C-c") 'sc3-run-line)
+  (local-set-key (kbd "C-z C-g") 'sc3-run-line-and-go)
+  (local-set-key (kbd "C-z b") 'sc3-run-block)
+  (local-set-key (kbd "C-z C-b") 'sc3-run-block-and-go)
   )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
 
