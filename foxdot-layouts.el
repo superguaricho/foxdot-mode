@@ -146,7 +146,7 @@
   "Set SC3 layout."
   (interactive)
   (let ((b (or (get-buffer "*FoxDot*") (get-buffer "*Python*"))))
-    (unless b (save-selected-window (foxdot-set-two-win-layout b))))
+    (if b (save-selected-window (foxdot-set-two-win-layout b))))
   )
 
 (defun foxdot-sc3-foxdot-layout (&optional b)
@@ -169,9 +169,9 @@ B is a buffer that you want in top left most window."
 
 (defun foxdot-mode-layout-keybindings ()
   "FoxDot keybindings in MAP."
-  (local-set-key (kbd "C-c 3") 'foxdot-set-sc3-layout)
-  (local-set-key (kbd "C-c f") 'foxdot-set-foxdot-layout)
-  (local-set-key (kbd "C-c w") 'foxdot-sc3-foxdot-layout)
+  (local-set-key (kbd "C-c w") 'foxdot-set-sc3-layout)
+  (local-set-key (kbd "C-c C-w") 'foxdot-set-foxdot-layout)
+  (local-set-key (kbd "C-c 3") 'foxdot-sc3-foxdot-layout)
   )
 (add-hook 'sclang-mode-hook 'foxdot-mode-layout-keybindings)
 
