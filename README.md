@@ -39,19 +39,27 @@ Evaluate those lines or restart Emacs.
 
 <li> Install the SuperCollider FoxDot quark.
 
-Assuming that you have installed SuperCollider, from Ecmacs do Alt-x install-fd
+Assuming that you have installed SuperCollider, from Emacs do:
+
+    Alt-x install-fdq ENTER
 
 This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark and recompile the SuperCollider class library.
 
-Youst hear a simple sound. If not, do Alt+x test-sc3 ENTER. If you don't hear it, there is a problem with SuperCollider or your audio system.
+You must hear a simple sound. If not, do:
+
+    Alt+x test-sc3 ENTER
+    
+If you don't hear it, there is a problem with SuperCollider or your audio system.
 
 <li> Start foxdot.
 
 If you hearded the sound, you can continue.
 
-Open a file with .foxdot extension.  Type Alt+x foxdot ENTER. This run sclang and FoxDot process buffers.
+Open a file with .foxdot extension. Type:
 
-Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  \*FoxDot\* and the \*SCLang:SC3\* buffers.
+    Alt+x foxdot ENTER
+    
+This run sclang and FoxDot process buffers. Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  \*FoxDot\* and the \*SCLang:SC3\* buffers.
 
 SuperCollider is now listening for messages from FoxDot.
 
@@ -61,9 +69,9 @@ For example, type in your workspace:
 
     p1 >> pluck([12], dur=0.25, echo=0.8)
 
-With the cursor over the line type Ctrl+c Ctrl+c.
+With the cursor over the line type C-c C-c.
 
-Do Ctrl+c Ctrl+u to stop the sounds.
+Do C-c C-u to stop the sounds.
 
 </ol>
 
@@ -72,7 +80,11 @@ If you want FoxDot launch when you open "myfile.foxdot", add the following lines
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot)
 
-If you do this, don't need use Alt+x foxdot to play. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode add instead:
+If you do this, don't need use
+
+    Alt-x foxdot ENTER
+    
+to play. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode add instead:
 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
@@ -86,14 +98,11 @@ I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added 
 
 Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* process and I can write and evaluate my livecoding lines, seting the cursor over the line that I want execute and using the folowing keys:
 
-    C-c C-c (foxdot-run-line) Send a line to the interpreter
-    C-c  C-g (foxdot-run-line-and-go). Send a line to the interpreter and advance the cursor to the next non blank line.
-    C-c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
-    C-c C-b (foxdot-run-block-and-go). Send the current block to the interpreter and advance to the next non blank line.
-    C-c n (foxdot-run-block-by-lines).  Send a block line by line.
-    C-c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
-    C-c C-a (foxdot-clear-foxdot).  Clear the foxdot interpreter screen.
-    C-c C-u (foxdot-hush).  Mute foxdot sending "Clock.clear()" command to the interpreter.
+    C-z C-c (sc3-run-line) Send a line to sclang
+    C-z  C-g (sc3-run-line-and-go). Send a line to sclang and advance the cursor to the next non blank line.
+    C-z b (sc3-run-block). Send the block where is the cursor to sclang.
+    C-z C-b (sc3-run-block-and-go). Send the current block to sclang and advance to the next non blank line.
+    C-z C-u (sc3-hush).  Mute sclang.
 
 You can start sclang and foxdot interpreters with:
 
@@ -102,6 +111,15 @@ You can start sclang and foxdot interpreters with:
 To quit sclang and foxdot: Alt+x kill-foxdot ENTER, or:
  
     C-c C-k (foxdot-sclang-foxdot-quit)
+
+Is possible interactively work with the sclang buffer, from a .sc3 or .foxdot buffer. Use the following kays:
+
+    C-c C-c (foxdot-run-line) Send a line to the interpreter
+    C-c  C-g (foxdot-run-line-and-go). Send a line to the interpreter and advance the cursor to the next non blank line.
+    C-c b (foxdot-run-block). Send the block where is the cursor to the interpreter.
+    C-c C-b (foxdot-run-block-and-go). Send the current block to the interpreter and advance to the next non blank line.
+    C-c n (foxdot-run-block-by-lines).  Send a block line by line.
+    C-c o (foxdot-run-block-by-lines-and-go).  Send a block line by line and go to next non empty line.
 
 Other intesting keys:
 
@@ -117,12 +135,6 @@ foxdot-mode can show three layouts:
     C-c w (foxdot-set-sc3-layout). Three vertical windows: workspace, foxdot and sclang. 
     C-c C-w (foxdot-set-foxdot-layout). Two windows: workspace and foxdot.
     C-c 3 (foxdot-sc3-foxdot-layout). Two windows: workspace and sclang.
-
-<h2>Todo</h2>
-
-Add to foxdot-sc3-mode.el functions to interactively work with sclang from a buffer with sc3-mode.
-
-Some code hiliting to foxdot-mode.
 
 <h2>Problems</h2>
 
