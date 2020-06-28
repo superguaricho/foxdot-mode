@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 numa.tortolero@gmail.com
 ;; Author: numa.tortolero@gmail.com
 ;; Homepage: https://github.com/superguaricho/foxdot-mode
-;; Version: 0.01 (alpha)
+;; Version: 0.03 (alpha)
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "24"))
 
