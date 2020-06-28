@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 numa.tortolero@gmail.com
 ;; Author: numa.tortolero@gmail.com
 ;; Homepage: https://github.com/superguaricho/foxdot-mode
-;; Version: 1.02 (alpha)
+;; Version: 1.01 (alpha)
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "24"))
 
@@ -30,7 +30,7 @@
 ;;
 ;; Instructions:
 ;; (1) If you have not doen it, install FoxDot.  From a shell command line do:
-;;         $ pip install FoxDot
+;;         $ pip install FoxDot 
 ;;
 ;; (2) Install Emacs FoxDot mode.
 ;; Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or
