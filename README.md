@@ -99,7 +99,7 @@ I have cloned the foxdot-mode repository in "~/.emacs/site-lisp" path and added 
 Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* process and I can write and evaluate my livecoding lines, seting the cursor over the line that I want execute and using the folowing keys:
 
     C-z C-c (sc3-run-line) Send a line to sclang
-    C-z  C-g (sc3-run-line-and-go). Send a line to sclang and advance the cursor to the next non blank line.
+    C-z C-g (sc3-run-line-and-go). Send a line to sclang and advance the cursor to the next non blank line.
     C-z b (sc3-run-block). Send the block where is the cursor to sclang.
     C-z C-b (sc3-run-block-and-go). Send the current block to sclang and advance to the next non blank line.
     C-z C-u (sc3-hush).  Mute sclang.
