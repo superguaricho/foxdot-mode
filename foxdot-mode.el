@@ -142,13 +142,6 @@
 ;;  Ctrl+c Ctrl+w (foxdot-set-foxdot-layout).  Two windows: workspace and foxdot.
 ;;  Ctrl+c 3 (foxdot-sc3-foxdot-layout).  Two windows: workspace and sclang.
 ;;
-;; Todo:
-;;
-;; Add to foxdot-sc3-mode.el functions to interactively work with sclang from a buffer with
-;; sc3-mode.
-;;
-;; Some code hiliting to foxdot-mode.
-;;
 ;; Problems:
 ;;
 ;; This code is in alpha state, is not very tested (June, 2020).
