@@ -118,6 +118,12 @@
   (sc3-next-non-blank-line)
   )
 
+(defun sc3-hush ()
+  "Hush sclang."
+  (interactive)
+  (sc3-send-string "thisProcess.stop")
+  )
+
 ;;
 
 (defun sc3-start-fdquark ()
@@ -291,6 +297,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   (define-key map (kbd "C-z C-g") 'sc3-run-line-and-go)
   (define-key map (kbd "C-z b") 'sc3-run-block)
   (define-key map (kbd "C-z C-b") 'sc3-run-block-and-go)
+  (define-key map (kbd "C-z C-u") 'sc3-hush)
   )
 
 (defun sc3-turn-on-keybindings ()
@@ -303,6 +310,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   (local-set-key (kbd "C-z C-g") 'sc3-run-line-and-go)
   (local-set-key (kbd "C-z b") 'sc3-run-block)
   (local-set-key (kbd "C-z C-b") 'sc3-run-block-and-go)
+  (local-set-key (kbd "C-z C-u") 'sc3-hush)
   )
 (add-hook 'sc3t-mode-hook 'sc3-turn-on-keybindings)
 
