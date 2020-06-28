@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 numa.tortolero@gmail.com
 ;; Author: numa.tortolero@gmail.com
 ;; Homepage: https://github.com/superguaricho/foxdot-mode
-;; Version: 1.00 (alpha)
+;; Version: 1.02 (alpha)
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "24"))
 
@@ -564,11 +564,6 @@ If you have not passed a buffer B, uses current buffer."
   (foxdot-kill-foxdot)
   )
 
-(defalias 'install-foxdot-quark 'sc3-install-foxdot-quark)
-(defalias 'recompile-classlib   'sc3-recompile-classlib)
-(defalias 'foxdot-quark-start   'sc3-foxdot-quark-start)
-(defalias 'test-audio           'sc3-test-audio)
-
 (defun foxdot-mode-keybindings (map)
   "FoxDot keybindings in MAP."
   (define-key map (kbd "C-c C-s") 'foxdot-sclang-foxdot-start)
@@ -615,25 +610,7 @@ If you have not passed a buffer B, uses current buffer."
   (local-set-key [?\C-c ?\C-a] 'foxdot-clear-foxdot)
   ;;  (local-set-key [?\C-c ?\l] 'foxdot-load-buffer)
   )
-
-(defun turn-on-fd-keys ()
-  "Used to turn on some key bindings in not foxdot modes."
-  (local-set-key (kbd "C-c C-s") 'foxdot-sclang-foxdot-start)
-  (local-set-key (kbd "C-c C-k") 'foxdot-sclang-foxdot-quit)
-  (local-set-key (kbd "C-c s") 'foxdot-sc3-start-process)
-  (local-set-key (kbd "C-c k") 'foxdot-sc3-kill-process)
-  (local-set-key (kbd "C-c f") 'foxdot-start-foxdot)
-  (local-set-key (kbd "C-c q") 'foxdot-kill-foxdot)
-  )
 (add-hook 'foxdot-mode-hook 'turn-on-foxdot-keybindings)
-(add-hook 'sc3-mode-hook 'turn-on-fd-keys)
-
-(defun foxdot-set-sc3-keybindings ()
-  "To turn on sc3 key bindings in foxdot-mode buffers."
-  (local-set-key (kbd "C-z C-s") 'sc3-start-process)
-  (local-set-key (kbd "C-z C-k") 'sc3-kill-process)
-  )
-(add-hook 'foxdot-mode-hook 'foxdot-set-sc3-keybindings)
 
 (defun foxdot-set-keybindings ()
   "To turn on foxdot key bindings in other modes buffers."
@@ -645,6 +622,9 @@ If you have not passed a buffer B, uses current buffer."
   (local-set-key (kbd "C-c q") 'foxdot-kill-foxdot)
   )
 (add-hook 'sc3-mode-hook 'foxdot-set-keybindings)
+
+(declare-function sc3-turn-on-keybindings "sc3-mode")
+(add-hook 'foxdot-mode-hook 'sc3-turn-on-keybindings)
 
 ;;
 
@@ -698,14 +678,22 @@ If you have not passed a buffer B, uses current buffer."
   '("dur" "amp" "pan" "echo" "pan" "indent" "stop" "oct" "cutoff" "room" "lpf" "rate" "sus"))
 
 (defconst fd-functions
-  '("lazer" "crunch" "swell" "quin" "sinepad" "pads" "loop" "blip" "squish" "pasha" "space" "growl" "dirt" "snick" "spark" "orient" "karp" "twang" "ambi" "sawbass" "dub" "soft" "creep" "varsaw" "saw" "arpy" "viola" "gong" "prophet" "glass" "pulse" "rave" "dab" "razz" "soprano" "noise" "keys" "audioin" "scratch" "ripple" "stretch" "bass" "zap" "bug" "donk" "star" "jbass" "scatter" "fuzz" "bell" "dbass" "marimba" "feel" "klank" "play1" "charm" "sitar" "play2" "nylon" "pluck" "hh" "Clock" "play" "print" "SynthDefs" "PWhite" "PRand" "var" "linvar"))
+  '("lazer" "crunch" "swell" "quin" "sinepad" "pads" "loop" "blip" "squish" "pasha" "space" "growl" "dirt" "snick" "spark" "orient" "karp" "twang" "ambi" "sawbass" "dub" "soft" "creep" "varsaw" "saw" "arpy" "viola" "gong" "prophet" "glass" "pulse" "rave" "dab" "razz" "soprano" "noise" "keys" "audioin" "scratch" "ripple" "stretch" "bass" "zap" "bug" "donk" "star" "jbass" "scatter" "fuzz" "bell" "dbass" "marimba" "feel" "klank" "play1" "charm" "sitar" "play2" "nylon" "pluck" "Clock" "play" "print" "SynthDefs" "PWhite" "PRand" "var" "linvar" "return"))
 
-(defvar fd-font-lock-keywords
+(setq fd-keywords (cl-concatenate 'list fd-keywords sc3-keywords))
+(setq fd-functions (cl-concatenate 'list fd-functions sc3-functions))
+      
+(setq fd-font-lock-keywords
   (list
-   `("\"\\.\\*\\?" . font-lock-string-face)
-   `(,(rx (or (and "\'\'\'" (*? anything) "\'\'\'") (and "#" (*? anything) eol))) . font-lock-comments)
+   `("\"[^\\].*\"" . font-lock-string-face)
+   `("\'..\\(.\\|
+\\)*\'..\\|#.*$" . font-lock-comment-face)
+   ;; `(,(rx (or (and "\'\'\'" (*? anything) "\'\'\'") (and "#" (*? anything) eol))) . font-lock-comments)
    `(,(concat "\\_<" (regexp-opt fd-keywords) "\\_>") . font-lock-keyword-face)
-   `(,(concat "\\_<" (regexp-opt fd-functions) "\\_>") . font-lock-function-name-face))
+   `(,(concat "\\_<" (regexp-opt fd-functions) "\\_>") . font-lock-function-name-face)
+   `("^[a-z]*[^(][a-zA-Z]*[^(>]" . font-lock-function-name-face)
+   `(">> " . font-lock-reference-face))
+   ;; `("^[a-z]\\(.* >> \\|[a-z] \\|\\([1-9][0-9]\\|[1-9]\\)\\)" . font-lock-reference-face)))
   "Additional expressions to highlight in `foxdot-mode'.")
 
 ;;;###autoload
@@ -719,6 +707,9 @@ If you have not passed a buffer B, uses current buffer."
   (set (make-local-variable 'font-lock-defaults) '(fd-font-lock-keywords t))
   (turn-on-font-lock)
   )
+
+(add-hook 'foxdot-mode-hook (lambda () (show-paren-mode 1)))
+(setq show-paren-style 'parenthesis)
 
 (provide 'foxdot-mode)
 ;;; foxdot-mode.el ends here
