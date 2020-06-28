@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 numa.tortolero@gmail.com
 ;; Author: numa.tortolero@gmail.com
 ;; Homepage: https://github.com/superguaricho/foxdot-mode
-;; Version: 0.01 (alpha)
+;; Version: 1.03 (alpha)
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "24"))
 
@@ -125,6 +125,7 @@
   (interactive)
   (sc3-send-string "FoxDot.start;")
   )
+(defalias 'start-fd-quark   'sc3-start-fdquark)
 
 (defun sc3-test-audio ()
   "Recompile the SC3 class library."
@@ -210,12 +211,15 @@
   (interactive)
   (sc3-send-string "Quarks.install(\"FoxDot\");")
   )
+(defalias 'install-quark 'sc3-install-quark)
 
 (defun sc3-recompile-classlib ()
   "Recompile the SC3 class library."
   (interactive)
   (sc3-send-string "thisProcess.recompile();")
   )
+(defalias 'recompile-classlib 'sc3-recompile-classlib)
+
 
 (defun sc3-compile-advice (orig-fun &rest args)
   "Control foxdot quark installation.
@@ -255,7 +259,8 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
     (message "sclang is not in PATH or SuperCollider is not installed."))
   )
 
-(defalias 'install-fd 'sc3-install-foxdog-quark)
+(defalias 'install-fd-quark 'sc3-install-foxdog-quark)
+(defalias 'install-fdq 'sc3-install-foxdog-quark)
 
 ;;
 
@@ -269,9 +274,9 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 
 (defvar sc3-font-lock-keywords
   (list
-   `("\"\\.\\*\\?" . font-lock-string-face)
+   `("\"[^\"]*\"" . font-lock-string-face)
    `("/\\*.*[:ascii:].*\\*/" . font-lock-comments)
-   `(,(concat "\\_<" (regexp-opt sc3-keywords) "\\_>") . font-lock-keyword-face)
+   `(,(concat "\\_<" (regexp-opt sc3-keywords) "\\_>")  . font-lock-keyword-face)
    `(,(concat "\\_<" (regexp-opt sc3-functions) "\\_>") . font-lock-function-name-face))
   "Additional expressions to highlight in `sc3-mode'.")
 
@@ -299,8 +304,13 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   (local-set-key (kbd "C-z b") 'sc3-run-block)
   (local-set-key (kbd "C-z C-b") 'sc3-run-block-and-go)
   )
-(add-hook 'foxdot-mode-hook 'sc3-turn-on-keybindings)
+(add-hook 'sc3t-mode-hook 'sc3-turn-on-keybindings)
 
+(defun foxdot-set-sc3-keybindings ()
+  "To turn on sc3 key bindings in other modes buffers."
+  (local-set-key (kbd "C-z C-s") 'sc3-start-process)
+  (local-set-key (kbd "C-z C-k") 'sc3-kill-process)
+  )
 
 (defun sc3-mode-menu (map)
   "FoxDot menu from MAP."
