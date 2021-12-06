@@ -30,7 +30,7 @@
 ;;
 ;; Instructions:
 ;; (1) If you have not doen it, install FoxDot.  From a shell command line do:
-;;         $ pip install FoxDot 
+;;         $ pip install FoxDot
 ;;
 ;; (2) Install Emacs FoxDot mode.
 ;; Clone the foxdot-mode project from git in some directory like "\~/.emacs.d" or
@@ -464,6 +464,7 @@ If you have not passed a buffer B, uses current buffer."
     (foxdot-start-foxdot))
   )
 (defalias 'foxdot-restart-foxdot 'foxdot-do-restart)
+(defalias 'restart-foxdot 'foxdot-do-restart)
 
 ;;;###autoload
 (defun foxdot-start-foxdot ()
@@ -675,8 +676,8 @@ If you have not passed a buffer B, uses current buffer."
 
 (setq fd-keywords (cl-concatenate 'list fd-keywords sc3-keywords))
 (setq fd-functions (cl-concatenate 'list fd-functions sc3-functions))
-      
-(setq fd-font-lock-keywords
+
+(defvar fd-font-lock-keywords
   (list
    `("\"[^\\].*\"" . font-lock-string-face)
    `("\'..\\(.\\|
@@ -686,7 +687,7 @@ If you have not passed a buffer B, uses current buffer."
    `(,(concat "\\_<" (regexp-opt fd-functions) "\\_>") . font-lock-function-name-face)
    `("^[a-z]*[^(][a-zA-Z]*[^(>]" . font-lock-function-name-face)
    `(">> " . font-lock-reference-face))
-   ;; `("^[a-z]\\(.* >> \\|[a-z] \\|\\([1-9][0-9]\\|[1-9]\\)\\)" . font-lock-reference-face)))
+  ;; `("^[a-z]\\(.* >> \\|[a-z] \\|\\([1-9][0-9]\\|[1-9]\\)\\)" . font-lock-reference-face)))
   "Additional expressions to highlight in `foxdot-mode'.")
 
 ;;;###autoload

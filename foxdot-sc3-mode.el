@@ -199,6 +199,7 @@
 	(message "sclang is not in PATH or SuperCollider is not installed."))
       (if (get-buffer sc3-buffer) (foxdot-set-sc3-layout))
       (when (and (get-buffer sc3-buffer) (get-buffer "*FoxDot*"))
+	(with-current-buffer (get-buffer sc3-buffer) (read-only-mode))
 	(foxdot-sc3-foxdot-layout)
 	(foxdot-do-restart))
       (get-process sc3-process)))
