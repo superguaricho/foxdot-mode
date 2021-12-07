@@ -52,11 +52,11 @@
 ;;
 ;; (3) Install the SuperCollider FoxDot quark.
 ;;
-;; Assuming that you have installed SuperCollider, from Ecacs do Alt-x install-foxdot-quark
+;; Assuming that you have installed SuperCollider, from Emacs do Alt-x install-foxdot-quark
 ;;
 ;; This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark.
 ;;
-;; Recompile the SuperCollider class library, type: Alt+x recompile-libclass ENTER.
+;; Recompile the SuperCollider class library, type: Alt+x recompile-classlib ENTER.
 ;;
 ;; Start the FoxDot quark, type; Alt+x foxdot-quark-start ENTER.
 ;;
@@ -67,12 +67,12 @@
 ;;
 ;; Kill sclang process: Ctrl+c k, or type Alt+x sc3-kill-process
 ;;
-;; (3) Start foxdot.
+;; (4) Start foxdot.
 ;; Open a file with .foxdot extension.  Type Alt+x foxdot ENTER.
 ;; This run sclang and FoxDot process buffers.  Wait and you will see three horizontal
 ;; windows: the .foxdot file (your workspace), the  *FoxDot* and the *SCLang:SC3* buffers.
 ;;
-;; (4) Play with some codes.
+;; (5) Play with some codes.
 ;; For example, type in your workspace:
 ;;
 ;; p1 >> pluck([12], dur=0.25, echo=0.8)
@@ -175,8 +175,7 @@
 ;; To avoid the "Can’t guess python-indent-offset" warning.
 (if (boundp 'python-indent-guess-indent-offset-verbose)
     (setq python-indent-guess-indent-offset-verbose nil)
-  (defvar python-indent-guess-indent-offset-verbose nil)
-  )
+  (defvar python-indent-guess-indent-offset-verbose nil))
 
 (setq python-shell-completion-native-enable nil)
 (add-to-list 'python-shell-completion-native-disabled-interpreters "python")
@@ -192,14 +191,6 @@
              (insert string)
              (comint-send-input))
             (t (message "There is not *FoxDot* buffer.")))))
-  )
-
-(defun foxdot-shell-newline ()
-  "Send new line to *FoxDot* buffer."
-  (interactive)
-  (when (get-buffer foxdot-buffer-name)
-    (with-current-buffer (get-buffer foxdot-buffer-name)
-      (comint-send-input)))
   )
 
 (defun foxdot-next-non-blank-line ()
@@ -265,7 +256,7 @@
   )
 
 (defun foxdot-run-block-and-go ()
-  "Send the current block to the interpreter."
+  "Send the current block to the interpreter and jump to the next non blank line."
   (interactive)
   (foxdot-run-block)
   (mark-paragraph -1)
@@ -348,8 +339,8 @@
 ;;;;
 
 (defun foxdot-test-audio ()
-  (interactive)
   "Test foxdot audio."
+  (interactive)
   (python-shell-send-string "p1 >> pluck([12], dur=1, echo=0.8)"
 			    (get-process "Python"))
   (sit-for 2)
@@ -439,7 +430,7 @@ If you have not passed a buffer B, uses current buffer."
 	      (foxdot-set-prompt)
 	      (python-shell-send-string fox-dot-cli-init-string p)
 	      (sit-for 1.5)
-	      (comint-clear-buffer)		
+	      (comint-clear-buffer)
 	      (advice-remove (process-filter p) #'foxdot-tracing-function)))))
   )
 
@@ -459,7 +450,7 @@ If you have not passed a buffer B, uses current buffer."
 (defun foxdot-do-restart ()
   "What to do when foxdot buffer exists."
   (when (get-buffer "*FoxDot*")
-    (kill-buffer (get-buffer "*FoxDot*"))    
+    (kill-buffer (get-buffer "*FoxDot*"))
     (sit-for 0.5)
     (foxdot-start-foxdot))
   )
@@ -484,7 +475,7 @@ If you have not passed a buffer B, uses current buffer."
 
 ;;;###autoload
 (defalias 'start-foxdot 'foxdot-start-foxdot)
-(if (featurep 'flycheck) (add-hook 'foxdot-mode-hook '(lambda () (flycheck-mode 0))))
+(if (featurep 'flycheck) (add-hook 'foxdot-mode-hook #'(lambda () (flycheck-mode 0))))
 
 ;;
 
@@ -702,8 +693,9 @@ If you have not passed a buffer B, uses current buffer."
   (turn-on-font-lock)
   )
 
-(add-hook 'foxdot-mode-hook (lambda () (show-paren-mode 1)))
+(add-hook 'foxdot-mode-hook #'(lambda () (show-paren-mode 1)))
 (setq show-paren-style 'parenthesis)
 
 (provide 'foxdot-mode)
 ;;; foxdot-mode.el ends here
+

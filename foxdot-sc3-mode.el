@@ -127,14 +127,15 @@
 ;;
 
 (defun sc3-start-fdquark ()
-  "Install fixdot quark in SuperCollider."
+  "Start foxdot quark in SuperCollider."
   (interactive)
   (sc3-send-string "FoxDot.start;")
   )
-(defalias 'start-fd-quark   'sc3-start-fdquark)
+(defalias 'foxdot-quark-start 'sc3-start-fdquark)
+(defalias 'start-fd-quark 'sc3-start-fdquark)
 
 (defun sc3-test-audio ()
-  "Recompile the SC3 class library."
+  "Test SuperCollider audio."
   (interactive)
   (sc3-send-string
    "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play;")
@@ -255,7 +256,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 
 ;;;###autoload
 (defun sc3-install-foxdog-quark ()
-  "Install foxdot quark."
+  "Run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark.Install foxdot quark."
   (interactive)
   (if (executable-find "sclang")
       (cond ((not (get-buffer sc3-buffer))
@@ -265,7 +266,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 	       (advice-add 'sc3-insertion-filter :around #'sc3-compile-advice)))
     (message "sclang is not in PATH or SuperCollider is not installed."))
   )
-
+(defalias 'install-foxdot-quark 'sc3-install-foxdog-quark)
 (defalias 'install-fd-quark 'sc3-install-foxdog-quark)
 (defalias 'install-fdq 'sc3-install-foxdog-quark)
 
