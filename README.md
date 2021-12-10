@@ -126,7 +126,7 @@ Other intesting keys:
     C-c s (foxdot-sclang-start). Run sclang process only.
     C-c k (foxdot-sclang-kill).  Kill sclang process only.
     C-c f (foxdot-start-foxdot). Run python foxdot only.
-    C-c q (foxdot-kill-foxdot).  Kill python fpcdpt only.
+    C-c q (foxdot-kill-foxdot).  Kill python foxdot only.
 
 Layouts:
 
