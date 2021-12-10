@@ -140,7 +140,7 @@
 B is a buffer that you want in top left most window."
   (interactive)
   (let ((b (or b (current-buffer))))
-    (if (and (foxdot-get-foxdot-buffer) (foxdot-get-sc3-buffer))
+    (if (and (or (foxdot-python-buffer) (foxdot-get-foxdot-buffer)) (foxdot-get-sc3-buffer))
 	(save-selected-window
 	  (delete-other-windows)
 	  (split-window-below)
