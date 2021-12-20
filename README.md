@@ -136,7 +136,7 @@ foxdot-mode can show three layouts:
 
 <h2>Problems</h2>
 
-This code is in alpha state, is not very tested (June, 2021).
+This code is in alpha state, is not very tested (December, 2021).
 
 <h2>Acknowledgments</h2>
 
