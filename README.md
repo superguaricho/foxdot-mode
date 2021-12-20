@@ -41,11 +41,9 @@ Evaluate those lines or restart Emacs.
 
 Assuming that you have installed SuperCollider, from Emacs do:
 
-    Alt-x install-fdq ENTER
+    install-foxdot-quark ENTER
 
-This run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark and recompile the SuperCollider class library.
-
-You must hear a simple sound. If not, do:
+This search for sclang and, if it is in your PATH, run it in a Emacs buffer. Then, if you are in line, will install FoxDot quark, recompile the SuperCollider class library and start the FoxDot quark for you. You must hear a simple sound. If you don't hear it, do:
 
     Alt+x test-sc3 ENTER
     
@@ -84,7 +82,7 @@ If you do this, don't need use
 
     Alt-x foxdot ENTER
     
-to play. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode add instead:
+to play. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode add instead, and want use an external instance of sclang or scsynth, do:
 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
@@ -107,11 +105,11 @@ Now, when I open a .foxdot file in Emacs, start FoxDot, creates a \*FoxDot\* pro
 
 You can start sclang and foxdot interpreters with:
 
-    C-c C-s (foxdot-sclang-foxdot-start)
+    C-c C-s (foxdot-sc3-foxdot-start)
 
 To quit sclang and foxdot: Alt+x kill-foxdot ENTER, or:
  
-    C-c C-k (foxdot-sclang-foxdot-quit)
+    C-c C-k (foxdot-sc3-foxdot-quit)
 
 Is possible interactively work with the sclang buffer, from a .sc3 or .foxdot buffer. Use the following kays:
 
@@ -123,8 +121,8 @@ Is possible interactively work with the sclang buffer, from a .sc3 or .foxdot bu
 
 Other intesting keys:
 
-    C-c s (foxdot-sclang-start). Run sclang process only.
-    C-c k (foxdot-sclang-kill).  Kill sclang process only.
+    C-c s (foxdot-sc3-start). Run sclang process only.
+    C-c k (foxdot-sc3-kill).  Kill sclang process only.
     C-c f (foxdot-start-foxdot). Run python foxdot only.
     C-c q (foxdot-kill-foxdot).  Kill python foxdot only.
 
