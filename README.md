@@ -1,7 +1,7 @@
 # foxdot-mode
 <a href="http://foxdot.org">FoxDot</a> Mode for <a href="https://www.gnu.org/software/emacs/">Emacs</a>
 
-Version: 1.03 (alpha)
+Version: 1.04 (alpha)
 
 Author: numa.tortolero@gmail.com
 
