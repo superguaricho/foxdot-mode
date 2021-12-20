@@ -57,7 +57,7 @@ Open a file with .foxdot extension. Type:
 
     Alt+x foxdot ENTER
     
-This run sclang and FoxDot process buffers. Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  \*FoxDot\* and the \*SCLang:SC3\* buffers.
+This run sclang and FoxDot process buffers. Wait and you will see three horizontal windows: the .foxdot file (your workspace), the  \*FoxDot\* and the \*SC3:SCLang\* buffers.
 
 SuperCollider is now listening for messages from FoxDot.
 
