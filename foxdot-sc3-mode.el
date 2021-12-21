@@ -70,24 +70,21 @@
   (while (and (eolp) (bolp) (not (eobp))) (forward-line))
   )
 
-(declare-function python-shell-send-string "python")
 (defun sc3-run-line ()
   "Send the current line to the interpreter."
   (interactive)
-  (let* ((start (line-beginning-position))
-         (end (line-end-position))
-         (b (current-buffer))
-         (s (buffer-substring start end)))
+  (when (get-buffer sc3-buffer)
     (pulse-momentary-highlight-one-line (point))
     (sit-for 0.25)
-    (sc3-send-string s ))
+    (sc3-send-string (buffer-substring (line-beginning-position) (line-end-position))))
   )
 
 (defun sc3-run-line-and-go ()
   "Send the current line to the interpreter."
   (interactive)
-  (sc3-run-line)
-  (sc3-next-non-blank-line)
+  (when (get-buffer sc3-buffer)
+    (sc3-run-line)
+    (sc3-next-non-blank-line))
   )
 
 ;;
@@ -126,23 +123,26 @@
 
 ;;
 
-(defun sc3-start-fdquark ()
+(defun sc3-start-foxdot-quark ()
   "Start foxdot quark in SuperCollider."
   (interactive)
   (sc3-send-string "FoxDot.start;")
   )
-(defalias 'foxdot-quark-start 'sc3-start-fdquark)
-(defalias 'start-fd-quark 'sc3-start-fdquark)
+(defalias 'sc3-start-fdquark 'sc3-start-foxdot-quark)
+(defalias 'foxdot-quark-start 'sc3-start-foxdot-quark)
+(defalias 'start-fd-quark 'sc3-start-foxdot-quark)
+(defalias 'start-foxdot-quark 'sc3-start-foxdot-quark)
 
 (defun sc3-test-audio ()
   "Test SuperCollider audio."
   (interactive)
-  (sc3-send-string
-   "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play;")
+  (sc3-send-string "{ SinOsc.ar(440, 0, Line.kr(0.3, 0, 1, doneAction:2)) }.play;")
   )
 (defalias 'test-sc3 'sc3-test-audio)
+(defalias 'test-audio 'sc3-test-audio)
 
 ;;
+
 (declare-function foxdot-start-foxdot "foxdot-mode")
 (defun sc3-when-foxdot-buffer ()
   "What to do if *FoxDot* buffer exists."
@@ -156,30 +156,38 @@
   (sc3-when-foxdot-buffer)
   )
 
+(defun sc3-kill-process (process buffer)
+  "Kill PROCESS and BUFFER and its window."
+  (when (get-buffer buffer)
+    (delete-window (get-buffer-window buffer))
+    (kill-process process)
+    (kill-buffer buffer))
+  )
+
+(defun sc3-process-insert (proc buf)
+  "Handle string insertions in PROCESS BUFFER."
+  (let* ((m (process-mark proc))
+	 (moving (= (point) m)))
+    (goto-char m)
+    (insert string)
+    (set-marker m (point))
+    (set-window-point (get-buffer-window buf) (point))
+    (goto-char m))
+  )
+
 (defun sc3-insertion-filter (proc string)
   "SC3 PROC process STRING filter."
-  (when (buffer-live-p (process-buffer proc))
-    (display-buffer (process-buffer proc))
-    (when (string-match "Shared memory server interface initialized" string)
-      (sc3-start-fdquark))
-    (when (string-match "Listening for messages from FoxDot" string)
-      (sc3-when-listening-foxdot))
-    (with-current-buffer (process-buffer proc)
-	  (let ((moving (= (point) (process-mark proc))))
-	    (goto-char (process-mark proc))
-	    (insert string)
-	    (set-marker (process-mark proc) (point))
-	    (set-window-point (get-buffer-window sc3-buffer) (point))
-	    (goto-char (process-mark proc))))
-    (when (or
-	   (string-match "could not initialize audio" string)
-	   (string-match "jack server is not running or cannot be started" string))
+  (let ((buf (process-buffer proc)))
+  (when (buffer-live-p buf)
+    ;; (display-buffer (process-buffer proc))
+    (when (string-match "Shared memory server interface initialized" string) (sc3-start-foxdot-quark))
+    (when (string-match "Listening for messages from FoxDot" string) (sc3-when-listening-foxdot))
+    (with-current-buffer buf (sc3-process-insert proc buf))
+    (when (or (string-match "could not initialize audio" string)
+	      (string-match "jack server is not running or cannot be started" string))
       (message "It seems that SuperCollider could not run: %S" (replace-regexp-in-string "\n$" "" string))
       (sit-for 5)
-      (when (get-buffer sc3-buffer)
-	(delete-window (get-buffer-window sc3-buffer))
-	(kill-process proc)
-	(kill-buffer sc3-buffer))))
+      (sc3-kill-process proc sc3-buffer))))
   )
 
 (defun sc3-create-process ()
@@ -200,20 +208,18 @@
 (defun sc3-start-process ()
   "Create a SC3:SCLang process."
   (interactive)
-  (with-current-buffer (current-buffer)
-    (save-selected-window
-      (if (executable-find "sclang")
-	  (if (not (get-process sc3-process))
-	      (with-current-buffer (process-buffer (sc3-create-process)) (sc3-proc-mode))
-	    (message "A sclang process is running.  Kill it before restart it."))
-	(message "sclang is not in PATH or SuperCollider is not installed."))
-      (if (get-buffer sc3-buffer) (foxdot-set-sc3-layout))
-      (when (and (get-buffer sc3-buffer) (get-buffer "*FoxDot*"))
-	(with-current-buffer (get-buffer sc3-buffer) (read-only-mode))
-	(foxdot-sc3-foxdot-layout)
-	(foxdot-do-restart))
-      (get-process sc3-process)))
-  )
+  (save-selected-window
+    (if (not (get-process sc3-process))
+	(with-current-buffer (process-buffer (sc3-create-process)) (sit-for 1) (sc3-proc-mode))
+      (message "A sclang process is running.  Kill it before restart it."))
+    (if (get-buffer sc3-buffer) (foxdot-set-sc3-layout))
+    (when (and (get-buffer sc3-buffer) (get-buffer "*FoxDot*"))
+      (with-current-buffer (get-buffer sc3-buffer) (read-only-mode))
+      (foxdot-sc3-foxdot-layout)
+      (foxdot-do-restart))
+    (get-process sc3-process))
+)
+(defalias 'sc3-start 'sc3-start-process)
 
 (defun sc3-kill-process ()
   "Kill sc3-process and buffer."
@@ -306,7 +312,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 
   (define-key map (kbd "C-z C-c") 'sc3-run-line)
   (define-key map (kbd "C-z C-g") 'sc3-run-line-and-go)
-  (define-key map (kbd "C-z b") 'sc3-run-block)
+  (define-key map (kbd "C-z b")   'sc3-run-block)
   (define-key map (kbd "C-z C-b") 'sc3-run-block-and-go)
   (define-key map (kbd "C-z C-u") 'sc3-hush)
   )
@@ -319,7 +325,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 
   (local-set-key (kbd "C-z C-c") 'sc3-run-line)
   (local-set-key (kbd "C-z C-g") 'sc3-run-line-and-go)
-  (local-set-key (kbd "C-z b") 'sc3-run-block)
+  (local-set-key (kbd "C-z b")   'sc3-run-block)
   (local-set-key (kbd "C-z C-b") 'sc3-run-block-and-go)
   (local-set-key (kbd "C-z C-u") 'sc3-hush)
   )
