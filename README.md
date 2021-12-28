@@ -41,11 +41,7 @@ Evaluate those lines or restart Emacs.
 
 Assuming that you have installed SuperCollider, from Emacs do:
 
-<<<<<<< Updated upstream
-    install-foxdot-quark ENTER
-=======
     Alt-x install-foxdot-quark ENTER
->>>>>>> Stashed changes
 
 This search for sclang and, if it is in your PATH, run it in a Emacs buffer. Then, if you are in line, will install FoxDot quark, recompile the SuperCollider class library and start the FoxDot quark for you. You must hear a simple sound. If you don't hear it, do:
 
