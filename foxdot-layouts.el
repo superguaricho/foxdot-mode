@@ -75,16 +75,10 @@
   )
 
 (defun foxdot-bring-python-buffer ()
-  "Place pytohn buffer in selected window."
+  "Place python buffer in selected window."
   (interactive)
   (let ((b (get-buffer "*Python*")))
     (when b (set-window-buffer (selected-window) b)))
-  )
-
-(defun foxdot-get-buffer-window (buffer-name)
-  "Get the window where is BUFFER-NAME buffer."
-  (let ((b (get-buffer buffer-name)))
-    (if b (get-buffer-window b t) (foxdot-sc3-foxdot-layout)))
   )
 
 (defun foxdot-hide-buffer (buffer)
@@ -136,20 +130,18 @@
   )
 
 (defun foxdot-sc3-foxdot-layout (&optional b)
-  "Bring back 3x3 window configuration with my favorite buffers.
+    "Bring back 3x3 window configuration with my favorite buffers.
 B is a buffer that you want in top left most window."
   (interactive)
-  (let ((b (or b (current-buffer))))
-    (if (and (or (foxdot-python-buffer) (foxdot-get-foxdot-buffer)) (foxdot-get-sc3-buffer))
-	(save-selected-window
-	  (delete-other-windows)
-	  (split-window-below)
-	  (other-window 1)
-	  (foxdot-bring-foxdot-buffer) ;;  (or (get-buffer "*FoxDot*") (get-buffer "*Python*")))
-	  (split-window-below)
-	  (other-window 1)
-	  (foxdot-bring-sc3-buffer)
-	  (foxdot-set-window-buffer-in-frame 0 0 b))))
+  (let ((b (or b (current-buffer)))
+	(p (or (get-buffer "*Python*") (get-buffer "*FoxDot*")))
+	(s (get-buffer "*SC3:SCLang*")))
+    (when (and (or p s))
+      (switch-to-buffer b)
+      (delete-other-windows)
+      (display-buffer p '((display-buffer-below-selected) (inhibit-same-window . t)))
+      (with-selected-window (get-buffer-window p)
+	(display-buffer s '((display-buffer-below-selected) (inhibit-same-window . t))))))
   )
 
 (defun foxdot-mode-layout-keybindings ()

@@ -156,23 +156,23 @@
   (sc3-when-foxdot-buffer)
   )
 
-(defun sc3-kill-process (process buffer)
-  "Kill PROCESS and BUFFER and its window."
-  (when (get-buffer buffer)
-    (delete-window (get-buffer-window buffer))
-    (kill-process process)
-    (kill-buffer buffer))
-  )
-
-(defun sc3-process-insert (proc buf)
-  "Handle string insertions in PROCESS BUFFER."
-  (let* ((m (process-mark proc))
+(defun sc3-process-insert (string process buffer)
+  "Handle STRING insertions in PROCESS BUFFER."
+  (let* ((m (process-mark process))
 	 (moving (= (point) m)))
     (goto-char m)
     (insert string)
     (set-marker m (point))
-    (set-window-point (get-buffer-window buf) (point))
+    (set-window-point (get-buffer-window buffer) (point))
     (goto-char m))
+  )
+
+(defun sc3-kill (proc)
+  "Kill process PROC and its buffer."
+  (let* ((p (get-process proc))
+	 (b (process-buffer p)))
+    (if p (kill-process p))
+    (if b (with-current-buffer b (kill-buffer-and-window))))
   )
 
 (defun sc3-insertion-filter (proc string)
@@ -180,14 +180,14 @@
   (let ((buf (process-buffer proc)))
   (when (buffer-live-p buf)
     ;; (display-buffer (process-buffer proc))
-    (when (string-match "Shared memory server interface initialized" string) (sc3-start-foxdot-quark))
-    (when (string-match "Listening for messages from FoxDot" string) (sc3-when-listening-foxdot))
-    (with-current-buffer buf (sc3-process-insert proc buf))
+    (if (string-match "Shared memory server interface initialized" string) (sc3-start-foxdot-quark))
+    (if (string-match "Listening for messages from FoxDot" string) (sc3-when-listening-foxdot))
+    (with-current-buffer buf (sc3-process-insert string proc buf))
     (when (or (string-match "could not initialize audio" string)
 	      (string-match "jack server is not running or cannot be started" string))
       (message "It seems that SuperCollider could not run: %S" (replace-regexp-in-string "\n$" "" string))
       (sit-for 5)
-      (sc3-kill-process proc sc3-buffer))))
+      (sc3-kill proc))))
   )
 
 (defun sc3-create-process ()
@@ -205,26 +205,41 @@
 (declare-function foxdot-sc3-foxdot-layout "foxdot-mode")
 (declare-function foxdot-do-restart "foxdot-mode")
 
+(defun sc3-create-process-in-buffer (window)
+  "Create a sc3 process in a sc3 buffer."
+  (with-selected-window window
+    (delete-other-windows)
+    (save-selected-window
+      (display-buffer
+       (get-buffer-create sc3-buffer)
+       '((display-buffer-below-selected display-buffer-at-bottom)
+         (inhibit-same-window . t)
+         (dedicated . t)
+         (inhibit-switch-frame . t)))
+      (unless (eq (frame-root-window) (selected-window))
+        (window-resize (selected-window) (- (/ (frame-height) 2) (window-height)))
+      (sc3-create-process))))
+  )
+
 (defun sc3-start-process ()
   "Create a SC3:SCLang process."
   (interactive)
   (save-selected-window
     (if (not (get-process sc3-process))
-	(with-current-buffer (process-buffer (sc3-create-process)) (sit-for 1) (sc3-proc-mode))
+	(with-current-buffer (process-buffer (sc3-create-process-in-buffer (selected-window))) (sit-for 0.5) (sc3-proc-mode))
       (message "A sclang process is running.  Kill it before restart it."))
-    (if (get-buffer sc3-buffer) (foxdot-set-sc3-layout))
-    (when (and (get-buffer sc3-buffer) (get-buffer "*FoxDot*"))
-      (with-current-buffer (get-buffer sc3-buffer) (read-only-mode))
-      (foxdot-sc3-foxdot-layout)
-      (foxdot-do-restart))
     (get-process sc3-process))
-)
+  )
 (defalias 'sc3-start 'sc3-start-process)
 
 (defun sc3-kill-process ()
   "Kill sc3-process and buffer."
   (interactive)
-  (if (get-process sc3-process) (with-current-buffer sc3-buffer (kill-buffer-and-window)))
+  (let* ((p (get-process sc3-process))
+	 (b (process-buffer p)))
+	 ;; (w (get-buffer-window b)))
+    (if p (kill-process p))
+    (if b (with-current-buffer b (kill-buffer-and-window))))
   )
 
 ;;; sc3-install-fd-quark

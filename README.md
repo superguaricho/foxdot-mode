@@ -1,7 +1,7 @@
 # foxdot-mode
 <a href="http://foxdot.org">FoxDot</a> Mode for <a href="https://www.gnu.org/software/emacs/">Emacs</a>
 
-Version: 1.04 (alpha)
+Version: 1.05 (alpha)
 
 Author: numa.tortolero@gmail.com
 
@@ -41,7 +41,11 @@ Evaluate those lines or restart Emacs.
 
 Assuming that you have installed SuperCollider, from Emacs do:
 
+<<<<<<< Updated upstream
     install-foxdot-quark ENTER
+=======
+    Alt-x install-foxdot-quark ENTER
+>>>>>>> Stashed changes
 
 This search for sclang and, if it is in your PATH, run it in a Emacs buffer. Then, if you are in line, will install FoxDot quark, recompile the SuperCollider class library and start the FoxDot quark for you. You must hear a simple sound. If you don't hear it, do:
 
@@ -53,7 +57,7 @@ If you don't hear it, there is a problem with SuperCollider or your audio system
 
 If you hearded the sound, you can continue.
 
-Open a file with .foxdot extension. Type:
+Open a file with .foxdot extension. Type "Control c Control s" (foxdot-sc3-foxdot-start), or:
 
     Alt+x foxdot ENTER
     
@@ -82,7 +86,7 @@ If you do this, don't need use
 
     Alt-x foxdot ENTER
     
-to play. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode add instead, and want use an external instance of sclang or scsynth, do:
+to start FoxDot. The sclang and FoxDot interpreter will launch when you open a .foxdot file. If you have problem with foxdot-sc3-mode and want use an external instance of sclang or scsynth, do:
 
     (add-to-list 'auto-mode-alist '("\\.foxdot)?$" . foxdot-mode))
     (add-hook 'foxdot-mode-hook 'foxdot-start-foxdot)
@@ -121,8 +125,9 @@ Is possible interactively work with the sclang buffer, from a .sc3 or .foxdot bu
 
 Other intesting keys:
 
-    C-c s (foxdot-sc3-start). Run sclang process only.
-    C-c k (foxdot-sc3-kill).  Kill sclang process only.
+    C-c s (foxdot-sc3-start). Run sclang only.
+    C-c k (foxdot-sc3-kill).  Kill sclang only.
+    
     C-c f (foxdot-start-foxdot). Run python foxdot only.
     C-c q (foxdot-kill-foxdot).  Kill python foxdot only.
 
