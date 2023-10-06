@@ -285,7 +285,7 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
   )
 
 ;;;###autoload
-(defun sc3-install-foxdog-quark ()
+(defun sc3-install-foxdot-quark ()
   "Run sclang in a Emacs buffer and, if you are in line, will install FoxDot quark.Install foxdot quark."
   (interactive)
   (if (executable-find "sclang")
@@ -296,9 +296,9 @@ ORIG-FUN is the adviced function and ARGS its arguments/."
 	       (advice-add 'sc3-insertion-filter :around #'sc3-compile-advice)))
     (message "sclang is not in PATH or SuperCollider is not installed."))
   )
-(defalias 'install-foxdot-quark 'sc3-install-foxdog-quark)
-(defalias 'install-fd-quark 'sc3-install-foxdog-quark)
-(defalias 'install-fdq 'sc3-install-foxdog-quark)
+(defalias 'install-foxdot-quark 'sc3-install-foxdot-quark)
+(defalias 'install-fd-quark 'sc3-install-foxdot-quark)
+(defalias 'install-fdq 'sc3-install-foxdot-quark)
 
 ;;
 
